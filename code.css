@@ -1,0 +1,85 @@
+[data-theme="dark"] {
+    --bg: #0b1120; --panel: #0f172a; --cell: #0b1120;
+    --text: #f1f5f9; --line: #1e3a8a; --hl: #172554; --outer: #1e40af;
+    --hover-cell: #1e293b; --key-text: #ffffff;
+}
+[data-theme="light"] {
+    --bg: #f8fafc; --panel: #ffffff; --cell: #ffffff;
+    --text: #1e293b; --line: #93c5fd; --hl: #dbeafe; --outer: #1e40af;
+    --hover-cell: #f1f5f9; --key-text: #1e3a8a;
+}
+:root { --prim: #38bdf8; --ok: #22c55e; --no: #ef4444; }
+
+body { 
+    margin: 0; min-height: 100vh; display: flex; align-items: center; 
+    justify-content: center; background: var(--bg); color: var(--text); 
+    font-family: 'Segoe UI', sans-serif; transition: 0.3s; overflow-x: hidden;
+}
+
+.main-container { 
+    display: flex; gap: 40px; padding: 25px 40px; 
+    background: var(--panel); border-radius: 30px; 
+    box-shadow: 0 30px 60px rgba(0,0,0,0.6); 
+    transition: 0.3s;
+}
+
+/* RESPONSIVE MOBILE */
+@media (max-width: 768px) {
+    .main-container { flex-direction: column; gap: 20px; padding: 15px; width: 95vw; }
+    .info-panel { order: 2; width: 100%; }
+    .grid { 
+        order: 1; 
+        grid-template-columns: repeat(9, 10vw) !important; 
+        grid-template-rows: repeat(9, 10vw) !important;
+    }
+    .cell { font-size: 1.2rem !important; }
+    .keypad { width: 100% !important; max-width: 280px; margin: 0 auto; }
+}
+
+/* HEADER & THEME BTN */
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+h1 { margin: 0; font-size: 1.8rem; color: var(--prim); font-weight: 900; letter-spacing: 2px; }
+.theme-btn { 
+    width: 40px; height: 40px; border-radius: 12px; border: 1.5px solid var(--line);
+    background: var(--cell); color: var(--prim); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+}
+
+/* KEYPAD CHUẨN ẢNH */
+.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 190px; }
+.key { 
+    height: 50px; background: var(--cell); border: 1.2px solid var(--line); 
+    border-radius: 14px; display: flex; align-items: center; justify-content: center; 
+    cursor: pointer; font-weight: 800; font-size: 1.3rem; color: var(--key-text); transition: 0.2s;
+}
+.key:hover { background: var(--line); color: white; transform: scale(1.05); }
+
+.key.del { grid-column: span 3; color: var(--no); border-color: var(--no); font-size: 0.85rem; height: 40px; margin-top: 5px; }
+.key.del:hover { background: var(--no) !important; color: white !important; }
+.key.new-game { grid-column: span 3; background: var(--prim); color: #000; border: none; font-size: 0.8rem; height: 40px; margin-top: 5px; }
+
+/* BÀN CỜ */
+.grid { display: grid; grid-template-columns: repeat(9, 52px); grid-template-rows: repeat(9, 52px); background: transparent; border: 4px solid var(--outer); }
+.cell { background: var(--cell); color: var(--prim); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; cursor: pointer; border: none; position: relative; transition: 0.15s; }
+.cell::after { content: ''; position: absolute; inset: 0; border: 0.5px solid var(--line); opacity: 0.15; pointer-events: none; }
+
+/* Viền khối 3x3 */
+.cell:nth-child(3n) { border-right: 3px solid var(--outer) !important; }
+.cell:nth-child(9n) { border-right: none !important; }
+.cell:nth-child(n+19):nth-child(-n+27), .cell:nth-child(n+46):nth-child(-n+54) { border-bottom: 3px solid var(--outer) !important; }
+
+/* Hiệu ứng ô */
+.cell:not(.fixed):hover { background: var(--hover-cell); transform: scale(0.92); border-radius: 8px; z-index: 2; }
+.highlight { background: var(--hl) !important; }
+.selected { background: var(--prim) !important; color: white !important; transform: scale(1.1) !important; z-index: 5; border-radius: 8px; box-shadow: 0 0 15px var(--prim); }
+.fixed { color: var(--text) !important; opacity: 0.4; cursor: default; }
+.correct { color: var(--ok) !important; }
+.fixed-correct { background: rgba(34,197,94,0.1); cursor: default !important; }
+
+/* Lắc nhanh */
+.wrong { background: var(--no) !important; color: white !important; border-radius: 8px; animation: shakeQuick 0.25s ease-in-out; }
+@keyframes shakeQuick { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+
+.toast { position: fixed; top: -70px; left: 50%; transform: translateX(-50%); background: var(--no); color: white; padding: 10px 25px; border-radius: 50px; transition: 0.3s; z-index: 1000; font-weight: bold; }
+.toast.show { top: 20px; }
+.status-message { height: 25px; text-align: center; color: var(--ok); font-weight: bold; margin-bottom: 5px; }

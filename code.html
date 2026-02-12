@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sudoku Pro - Ultra Responsive</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="code.css">
+</head>
+<body data-theme="dark">
+
+    <div id="toast" class="toast">Sai rồi bro!</div>
+
+    <div class="main-container">
+        <div class="info-panel">
+            <div class="header">
+                <h1>SUDOKU</h1>
+                <button id="theme-btn" class="theme-btn" title="Đổi giao diện">
+                    <i id="theme-icon" class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+            
+            <div id="msg" class="status-message"></div>
+            
+            <div class="keypad">
+                <div class="key" onclick="inputValue(1)">1</div>
+                <div class="key" onclick="inputValue(2)">2</div>
+                <div class="key" onclick="inputValue(3)">3</div>
+                <div class="key" onclick="inputValue(4)">4</div>
+                <div class="key" onclick="inputValue(5)">5</div>
+                <div class="key" onclick="inputValue(6)">6</div>
+                <div class="key" onclick="inputValue(7)">7</div>
+                <div class="key" onclick="inputValue(8)">8</div>
+                <div class="key" onclick="inputValue(9)">9</div>
+                <div class="key del" onclick="inputValue('')">XÓA</div>
+                <button class="key new-game" onclick="confirmNewGame()">NEW GAME</button>
+            </div>
+        </div>
+
+        <div class="grid" id="board"></div>
+    </div>
+
+    <script>
+        const boardDiv = document.getElementById('board');
+        const toast = document.getElementById('toast');
+        const themeBtn = document.getElementById('theme-btn');
+        const themeIcon = document.getElementById('theme-icon');
+        const msgDiv = document.getElementById('msg');
+        let selected = null;
+        let currentQuiz = [];
+        let currentSol = [];
+        let wrongTimeout = null;
+
+        const base = [
+            1,2,3,4,5,6,7,8,9, 4,5,6,7,8,9,1,2,3, 7,8,9,1,2,3,4,5,6,
+            2,3,1,5,6,4,8,9,7, 5,6,4,8,9,7,2,3,1, 8,9,7,2,3,1,5,6,4,
+            3,1,2,6,4,5,9,7,8, 6,4,5,9,7,8,3,1,2, 9,7,8,3,1,2,6,4,5
+        ];
+
+        function confirmNewGame() {
+            const isPlaying = document.querySelectorAll('.fixed-correct').length > 0;
+            if (isPlaying && !confirm("Bỏ ván này để chơi ván mới hả bro?")) return;
+            startNewGame();
+        }
+
+        function startNewGame() {
+            const map = [1,2,3,4,5,6,7,8,9].sort(() => Math.random() - 0.5);
+            currentSol = base.map(n => map[n-1]);
+            currentQuiz = currentSol.map(v => Math.random() > 0.55 ? v : 0);
+            render();
+            msgDiv.innerText = "";
+            selected = null;
+        }
+
+        function render() {
+            boardDiv.innerHTML = "";
+            currentQuiz.forEach((val, i) => {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                if (val !== 0) { cell.innerText = val; cell.classList.add('fixed'); }
+                const r = Math.floor(i/9), c = i%9;
+                cell.dataset.r = r; cell.dataset.c = c; cell.dataset.index = i;
+                cell.onclick = () => {
+                    if (cell.classList.contains('fixed') || cell.classList.contains('fixed-correct')) return;
+                    if (selected) selected.classList.remove('selected');
+                    selected = cell; selected.classList.add('selected');
+                    highlight(r, c);
+                };
+                boardDiv.appendChild(cell);
+            });
+        }
+
+        function highlight(r, c) {
+            document.querySelectorAll('.cell').forEach(el => {
+                el.classList.remove('highlight');
+                if (el.dataset.r == r || el.dataset.c == c) el.classList.add('highlight');
+            });
+        }
+
+        function inputValue(n) {
+            if (!selected) return;
+            
+            clearTimeout(wrongTimeout);
+            selected.classList.remove('wrong');
+            toast.classList.remove('show');
+
+            const idx = selected.dataset.index;
+            if (n === '') { selected.innerText = ''; return; }
+
+            if (n == currentSol[idx]) {
+                selected.innerText = n;
+                selected.classList.add('correct', 'fixed-correct');
+                selected.classList.remove('selected');
+                selected = null;
+                document.querySelectorAll('.cell').forEach(el => el.classList.remove('highlight'));
+                checkWin();
+            } else {
+                selected.innerText = n;
+                selected.classList.add('wrong');
+                toast.classList.add('show');
+                let targetCell = selected;
+                wrongTimeout = setTimeout(() => {
+                    if (targetCell.classList.contains('wrong')) {
+                        targetCell.innerText = '';
+                        targetCell.classList.remove('wrong');
+                        toast.classList.remove('show');
+                    }
+                }, 250);
+            }
+        }
+
+        function checkWin() {
+            const filled = document.querySelectorAll('.fixed-correct').length + document.querySelectorAll('.fixed').length;
+            if (filled === 81) msgDiv.innerText = "THẮNG RỒI! 🎉";
+        }
+
+        themeBtn.onclick = () => {
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            themeIcon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+        };
+
+        startNewGame();
+    </script>
+</body>
+</html>

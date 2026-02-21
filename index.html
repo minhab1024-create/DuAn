@@ -1,146 +1,1662 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sudoku Pro - Ultra Responsive</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" href="code.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CVAssist — Tạo CV Chuyên Nghiệp</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #1a1a25;
+    --card: #16161f;
+    --border: rgba(255,255,255,0.08);
+    --text: #f0f0f5;
+    --text2: #8888aa;
+    --text3: #555570;
+    --accent: #c9a96e;
+    --accent2: #e8c98a;
+    --accent3: #8b6f3a;
+    --gold-glow: rgba(201,169,110,0.15);
+    --tag-bg: rgba(201,169,110,0.1);
+  }
+  [data-theme="light"] {
+    --bg: #f5f4ef;
+    --bg2: #eceae2;
+    --bg3: #e2dfd5;
+    --card: #faf9f6;
+    --border: rgba(0,0,0,0.1);
+    --text: #1a1918;
+    --text2: #5a5550;
+    --text3: #9a9590;
+    --gold-glow: rgba(139,95,42,0.1);
+    --tag-bg: rgba(139,95,42,0.08);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    transition: background 0.4s, color 0.4s;
+    overflow-x: hidden;
+  }
+
+  /* NOISE TEXTURE */
+  body::before {
+    content:'';
+    position:fixed;
+    inset:0;
+    opacity:0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    pointer-events:none;
+    z-index:9999;
+  }
+
+  /* NAVBAR */
+  nav {
+    position: fixed; top:0; left:0; right:0; z-index:100;
+    display: flex; align-items:center; justify-content:space-between;
+    padding: 20px 48px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(20px);
+    transition: all 0.4s;
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+  .logo span { color: var(--text); font-weight:400; font-style:italic; }
+
+  .nav-actions { display:flex; align-items:center; gap:12px; }
+
+  .theme-toggle {
+    width: 52px; height: 28px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    cursor: pointer;
+    position:relative;
+    transition: all 0.3s;
+    outline:none;
+    display:flex; align-items:center;
+    padding: 3px;
+  }
+  .theme-toggle::after {
+    content:'';
+    width: 20px; height: 20px;
+    border-radius:50%;
+    background: var(--accent);
+    transition: transform 0.3s;
+    flex-shrink:0;
+  }
+  [data-theme="light"] .theme-toggle::after { transform: translateX(24px); }
+  .theme-icon {
+    position:absolute;
+    font-size:11px;
+    transition: opacity 0.3s;
+  }
+  .theme-icon.sun { right:7px; opacity:0; }
+  .theme-icon.moon { left:7px; }
+  [data-theme="light"] .theme-icon.sun { opacity:1; }
+  [data-theme="light"] .theme-icon.moon { opacity:0; }
+
+  .btn-create-nav {
+    padding: 10px 24px;
+    background: var(--accent);
+    color: #1a1000;
+    border:none; border-radius:8px;
+    font-family:'DM Sans',sans-serif;
+    font-weight:600; font-size:14px;
+    cursor:pointer;
+    transition: all 0.25s;
+    letter-spacing:0.3px;
+  }
+  .btn-create-nav:hover { background: var(--accent2); transform:translateY(-1px); box-shadow:0 8px 24px var(--gold-glow); }
+
+  /* HERO */
+  .hero {
+    padding: 160px 48px 80px;
+    max-width: 1200px; margin:0 auto;
+    position:relative;
+  }
+  .hero-badge {
+    display:inline-flex; align-items:center; gap:8px;
+    padding: 6px 16px;
+    border: 1px solid var(--accent3);
+    border-radius:999px;
+    font-size:12px; font-weight:500;
+    color:var(--accent);
+    background: var(--tag-bg);
+    margin-bottom:32px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+  }
+  .hero-badge::before { content:'✦'; font-size:10px; }
+
+  h1.hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(48px, 7vw, 96px);
+    font-weight: 900;
+    line-height: 1.02;
+    margin-bottom:24px;
+    color: var(--text);
+  }
+  h1.hero-title em {
+    font-style:italic;
+    color: var(--accent);
+    display:block;
+  }
+
+  .hero-sub {
+    font-size:18px; color:var(--text2); max-width:560px;
+    line-height:1.7; margin-bottom:48px;
+    font-weight:300;
+  }
+
+  .hero-cta {
+    display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  }
+
+  .btn-primary {
+    padding: 18px 40px;
+    background: var(--accent);
+    color: #1a1000;
+    border:none; border-radius:12px;
+    font-family:'DM Sans',sans-serif;
+    font-weight:700; font-size:16px;
+    cursor:pointer;
+    transition: all 0.3s;
+    display:flex; align-items:center; gap:10px;
+    letter-spacing:0.2px;
+    animation: fadeUp 0.8s ease both;
+  }
+  .btn-primary:hover { background:var(--accent2); transform:translateY(-3px); box-shadow:0 16px 40px var(--gold-glow); }
+  .btn-primary .arrow { transition: transform 0.3s; }
+  .btn-primary:hover .arrow { transform:translateX(4px); }
+
+  .hero-stat {
+    display:flex; align-items:center; gap:6px;
+    color:var(--text2); font-size:14px;
+    animation: fadeUp 0.8s ease 0.2s both;
+  }
+  .hero-stat strong { color:var(--text); }
+
+  /* DECORATIVE LINES */
+  .hero-deco {
+    position:absolute; right:48px; top:50%;
+    transform:translateY(-50%);
+    opacity:0.06;
+    font-family:'Playfair Display',serif;
+    font-size:200px; font-weight:900;
+    color:var(--accent);
+    pointer-events:none;
+    user-select:none;
+  }
+
+  /* SECTION TITLE */
+  .section-header {
+    display:flex; align-items:baseline; justify-content:space-between;
+    margin-bottom:32px; flex-wrap:wrap; gap:12px;
+  }
+  .section-title {
+    font-family:'Playfair Display',serif;
+    font-size:32px; font-weight:700;
+    color:var(--text);
+  }
+  .section-title span { color:var(--accent); font-style:italic; }
+
+  .section-count {
+    font-size:13px; color:var(--text3);
+    padding:4px 12px; border:1px solid var(--border);
+    border-radius:999px;
+  }
+
+  /* CV GRID */
+  .cv-section {
+    padding: 0 48px 100px;
+    max-width: 1200px; margin:0 auto;
+  }
+
+  .cv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    grid-column: 1/-1;
+    text-align:center; padding:80px 20px;
+    border: 1px dashed var(--border);
+    border-radius:20px;
+    animation: fadeUp 0.6s ease both;
+  }
+  .empty-icon {
+    font-size:64px; margin-bottom:20px; opacity:0.4;
+  }
+  .empty-state h3 {
+    font-family:'Playfair Display',serif;
+    font-size:24px; margin-bottom:8px; color:var(--text2);
+  }
+  .empty-state p { color:var(--text3); font-size:15px; }
+
+  /* CV CARD */
+  .cv-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius:16px;
+    overflow:hidden;
+    cursor:pointer;
+    transition: all 0.3s;
+    animation: fadeUp 0.5s ease both;
+    position:relative;
+    group: true;
+  }
+  .cv-card:hover {
+    transform:translateY(-6px);
+    border-color: var(--accent3);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3), 0 0 0 1px var(--accent3);
+  }
+
+  .cv-card-header {
+    padding:24px;
+    background: linear-gradient(135deg, var(--bg3) 0%, var(--bg2) 100%);
+    position:relative; overflow:hidden;
+    min-height:100px;
+    display:flex; flex-direction:column; justify-content:flex-end;
+  }
+  .cv-card-header::before {
+    content:'CV';
+    position:absolute; right:-10px; top:-20px;
+    font-family:'Playfair Display',serif;
+    font-size:100px; font-weight:900;
+    color:var(--accent); opacity:0.05;
+    user-select:none; pointer-events:none;
+  }
+
+  .cv-card-industry {
+    font-size:11px; font-weight:600; letter-spacing:1px;
+    text-transform:uppercase; color:var(--accent);
+    margin-bottom:8px;
+  }
+  .cv-card-name {
+    font-family:'Playfair Display',serif;
+    font-size:20px; font-weight:700;
+    color:var(--text); line-height:1.2;
+  }
+
+  .cv-card-body { padding:20px 24px; }
+  .cv-card-job {
+    display:flex; align-items:center; gap:8px;
+    color:var(--text2); font-size:14px; margin-bottom:12px;
+  }
+  .cv-card-job::before { content:'💼'; font-size:12px; }
+
+  .cv-card-skills {
+    display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px;
+  }
+  .skill-tag {
+    padding:3px 10px;
+    background:var(--tag-bg);
+    border:1px solid var(--accent3);
+    color:var(--accent);
+    border-radius:999px;
+    font-size:11px; font-weight:500;
+    letter-spacing:0.3px;
+  }
+
+  .cv-card-footer {
+    padding:16px 24px;
+    border-top:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .cv-card-date { font-size:12px; color:var(--text3); }
+  .cv-card-actions { display:flex; gap:8px; }
+  .btn-icon {
+    width:32px; height:32px; border-radius:8px;
+    border:1px solid var(--border);
+    background:transparent;
+    color:var(--text2); cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px; transition:all 0.2s;
+  }
+  .btn-icon:hover { border-color:var(--accent); color:var(--accent); background:var(--tag-bg); }
+  .btn-icon.danger:hover { border-color:#ff6b6b; color:#ff6b6b; background:rgba(255,107,107,0.08); }
+
+  /* MODAL OVERLAY */
+  .overlay {
+    position:fixed; inset:0; z-index:200;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
+    display:flex; align-items:center; justify-content:center;
+    padding:20px;
+    opacity:0; pointer-events:none;
+    transition: opacity 0.3s;
+  }
+  .overlay.active { opacity:1; pointer-events:all; }
+
+  /* WIZARD MODAL */
+  .wizard {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius:24px;
+    width:100%; max-width:640px;
+    max-height:90vh; overflow-y:auto;
+    transform: translateY(20px) scale(0.97);
+    transition: transform 0.3s;
+    position:relative;
+  }
+  .overlay.active .wizard { transform: translateY(0) scale(1); }
+
+  .wizard-header {
+    padding:32px 40px 24px;
+    border-bottom:1px solid var(--border);
+    position:sticky; top:0; background:var(--card); z-index:10;
+    border-radius:24px 24px 0 0;
+  }
+  .wizard-step-indicator {
+    display:flex; gap:8px; margin-bottom:16px;
+  }
+  .step-dot {
+    height:4px; border-radius:999px;
+    background: var(--bg3); flex:1;
+    transition: background 0.4s, transform 0.3s;
+  }
+  .step-dot.active { background: var(--accent); }
+  .step-dot.done { background: var(--accent3); }
+
+  .wizard-step-label {
+    font-size:12px; color:var(--text3); letter-spacing:0.5px;
+    text-transform:uppercase; margin-bottom:4px;
+  }
+  .wizard-title {
+    font-family:'Playfair Display',serif;
+    font-size:26px; font-weight:700; color:var(--text);
+  }
+  .wizard-subtitle { font-size:14px; color:var(--text2); margin-top:6px; }
+
+  .wizard-body { padding:32px 40px; }
+  .wizard-footer {
+    padding:24px 40px;
+    border-top:1px solid var(--border);
+    display:flex; justify-content:space-between; align-items:center;
+    position:sticky; bottom:0; background:var(--card);
+    border-radius:0 0 24px 24px;
+  }
+
+  /* FORM ELEMENTS */
+  .form-group { margin-bottom:24px; }
+  .form-label {
+    display:block; font-size:13px; font-weight:600;
+    color:var(--text2); margin-bottom:8px;
+    letter-spacing:0.3px; text-transform:uppercase;
+  }
+  .form-input, .form-textarea, .form-select {
+    width:100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius:10px;
+    padding:14px 16px;
+    font-family:'DM Sans',sans-serif;
+    font-size:15px;
+    transition: all 0.25s;
+    outline:none;
+    appearance:none;
+  }
+  .form-input:focus, .form-textarea:focus, .form-select:focus {
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px var(--gold-glow);
+    background:var(--bg2);
+  }
+  .form-textarea { resize:vertical; min-height:100px; line-height:1.6; }
+
+  .input-hint {
+    font-size:12px; color:var(--text3); margin-top:6px;
+    display:flex; align-items:center; gap:4px;
+  }
+
+  /* CHIP SELECT */
+  .chip-group {
+    display:flex; flex-wrap:wrap; gap:8px; margin-top:4px;
+  }
+  .chip {
+    padding:8px 16px;
+    background:var(--bg3);
+    border:1px solid var(--border);
+    color:var(--text2);
+    border-radius:999px; cursor:pointer;
+    font-family:'DM Sans',sans-serif;
+    font-size:13px; font-weight:500;
+    transition:all 0.2s;
+    user-select:none;
+  }
+  .chip:hover { border-color:var(--accent3); color:var(--accent); }
+  .chip.selected {
+    background:var(--tag-bg);
+    border-color:var(--accent);
+    color:var(--accent);
+  }
+
+  /* TWO COL */
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+
+  /* TAG INPUT */
+  .tag-input-wrap {
+    display:flex; flex-wrap:wrap; gap:6px;
+    background:var(--bg3); border:1px solid var(--border);
+    border-radius:10px; padding:10px;
+    cursor:text; transition:all 0.25s;
+    min-height:50px; align-items:center;
+  }
+  .tag-input-wrap:focus-within {
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px var(--gold-glow);
+  }
+  .tag-item {
+    display:flex; align-items:center; gap:6px;
+    padding:4px 10px;
+    background:var(--tag-bg); border:1px solid var(--accent3);
+    color:var(--accent); border-radius:999px;
+    font-size:12px; font-weight:500;
+  }
+  .tag-remove { cursor:pointer; color:var(--accent3); }
+  .tag-remove:hover { color:#ff6b6b; }
+  .tag-real-input {
+    border:none; background:transparent;
+    color:var(--text); font-family:'DM Sans',sans-serif;
+    font-size:14px; outline:none; flex:1; min-width:120px;
+  }
+  .tag-real-input::placeholder { color:var(--text3); }
+
+  /* RANGE */
+  .range-wrap { padding:8px 0; }
+  input[type=range] {
+    -webkit-appearance:none; width:100%; height:6px;
+    background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--val,50%), var(--bg3) var(--val,50%));
+    border-radius:999px; outline:none; cursor:pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance:none; width:22px; height:22px;
+    border-radius:50%; background:var(--accent);
+    border:3px solid var(--card); cursor:pointer;
+    box-shadow:0 0 0 1px var(--accent);
+    transition:transform 0.2s;
+  }
+  input[type=range]::-webkit-slider-thumb:hover { transform:scale(1.2); }
+  .range-labels {
+    display:flex; justify-content:space-between;
+    font-size:11px; color:var(--text3); margin-top:6px;
+  }
+
+  /* BUTTONS */
+  .btn-secondary {
+    padding:12px 24px;
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--text2);
+    border-radius:10px; cursor:pointer;
+    font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500;
+    transition:all 0.2s;
+  }
+  .btn-secondary:hover { border-color:var(--accent3); color:var(--accent); }
+
+  .btn-next {
+    padding:12px 32px;
+    background:var(--accent); color:#1a1000;
+    border:none; border-radius:10px;
+    font-family:'DM Sans',sans-serif; font-size:14px; font-weight:700;
+    cursor:pointer; transition:all 0.25s;
+    display:flex; align-items:center; gap:8px;
+  }
+  .btn-next:hover { background:var(--accent2); transform:translateY(-1px); }
+  .btn-next:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+  /* NEW PREVIEW MODAL */
+  .preview-modal {
+    display:flex;
+    width:100%; max-width:1100px;
+    max-height:92vh;
+    border-radius:20px;
+    overflow:hidden;
+    border:1px solid var(--border);
+    transform:translateY(20px) scale(0.97);
+    transition:transform 0.3s;
+  }
+  .overlay.active .preview-modal { transform:none; }
+
+  /* THEME PANEL (LEFT) */
+  .theme-panel {
+    width:220px; min-width:220px;
+    background:var(--bg2);
+    border-right:1px solid var(--border);
+    display:flex; flex-direction:column;
+    overflow:hidden;
+    flex-shrink:0;
+  }
+  .theme-panel-header {
+    padding:20px 16px 14px;
+    border-bottom:1px solid var(--border);
+    flex-shrink:0;
+  }
+  .theme-panel-title {
+    font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;
+  }
+  .theme-panel-sub {
+    font-size:11px;color:var(--text3);
+  }
+  .theme-list {
+    flex:1;overflow-y:auto;padding:12px;
+    display:flex;flex-direction:column;gap:8px;
+  }
+  .theme-card {
+    border-radius:10px;
+    border:2px solid transparent;
+    padding:10px;
+    cursor:pointer;
+    transition:all 0.2s;
+    background:var(--card);
+  }
+  .theme-card:hover { border-color:var(--accent3); }
+  .theme-card.active { border-color:var(--accent); background:var(--tag-bg); }
+  .theme-preview-mini { margin-bottom:7px; pointer-events:none; }
+  .theme-card-name { font-size:12px;font-weight:700;color:var(--text);margin-bottom:1px; }
+  .theme-card-desc { font-size:11px;color:var(--text3); }
+
+  /* RIGHT PREVIEW AREA */
+  .preview-right {
+    flex:1; display:flex; flex-direction:column;
+    background:var(--bg3);
+    overflow:hidden;
+  }
+  .preview-toolbar-new {
+    padding:16px 24px;
+    background:var(--card);
+    border-bottom:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between;
+    flex-shrink:0;
+  }
+  .preview-scroll-area {
+    flex:1; overflow-y:auto; padding:24px;
+    display:flex; justify-content:center;
+  }
+  .cv-page-wrap {
+    width:100%; max-width:700px;
+    border-radius:8px;
+    overflow:hidden;
+    box-shadow:0 8px 40px rgba(0,0,0,0.4);
+    background:#fff;
+    transition:all 0.3s;
+  }
+
+  /* OLD - kept for reference but unused */
+  .cv-preview { display:none; }
+  .preview-toolbar { display:none; }
+
+  /* CV DOCUMENT */
+  .cv-doc {
+    padding:48px;
+    background: #fff;
+    color: #1a1918;
+    font-family:'DM Sans',sans-serif;
+  }
+  .cv-doc-header {
+    display:grid; grid-template-columns:1fr auto;
+    gap:24px; margin-bottom:40px; padding-bottom:32px;
+    border-bottom:3px solid;
+  }
+  .cv-doc-name {
+    font-family:'Playfair Display',serif;
+    font-size:40px; font-weight:900;
+    line-height:1.1; color:#1a1918;
+    margin-bottom:4px;
+  }
+  .cv-doc-role { font-size:18px; color:#666; font-weight:300; margin-bottom:12px; }
+  .cv-doc-contacts {
+    display:flex; flex-wrap:wrap; gap:12px;
+  }
+  .cv-doc-contact {
+    display:flex; align-items:center; gap:6px;
+    font-size:13px; color:#555;
+  }
+
+  .cv-doc-aside { text-align:right; }
+  .cv-aside-industry {
+    font-size:11px; font-weight:700; letter-spacing:2px;
+    text-transform:uppercase; margin-bottom:8px;
+    opacity:0.6;
+  }
+  .cv-aside-exp {
+    font-size:28px; font-weight:900;
+    font-family:'Playfair Display',serif; line-height:1;
+  }
+  .cv-aside-label { font-size:11px; opacity:0.5; }
+
+  .cv-section-title {
+    font-size:11px; font-weight:700; letter-spacing:2px;
+    text-transform:uppercase; margin-bottom:16px;
+    padding-bottom:8px; border-bottom:1px solid #eee;
+    color:#999;
+  }
+  .cv-section-block { margin-bottom:32px; }
+
+  .cv-exp-item { margin-bottom:20px; }
+  .cv-exp-header {
+    display:flex; justify-content:space-between; align-items:baseline;
+    margin-bottom:4px;
+  }
+  .cv-exp-title { font-weight:700; font-size:16px; color:#1a1918; }
+  .cv-exp-date { font-size:12px; color:#999; }
+  .cv-exp-company { font-size:14px; color:#555; margin-bottom:8px; font-weight:500; }
+  .cv-exp-desc { font-size:13px; line-height:1.7; color:#666; }
+
+  .cv-skills-wrap { display:flex; flex-wrap:wrap; gap:8px; }
+  .cv-skill-item {
+    padding:5px 14px;
+    border-radius:999px; font-size:12px; font-weight:600;
+    letter-spacing:0.3px;
+  }
+
+  .cv-two-col { display:grid; grid-template-columns:1fr 1fr; gap:32px; }
+
+  .cv-summary {
+    font-size:15px; line-height:1.8; color:#444;
+    font-style:italic; padding:20px;
+    border-left:3px solid;
+    background:#fafafa;
+    border-radius:0 8px 8px 0;
+    margin-bottom:32px;
+  }
+
+  .cv-edu-item { margin-bottom:16px; }
+  .cv-edu-degree { font-weight:700; color:#1a1918; }
+  .cv-edu-school { color:#666; font-size:14px; }
+  .cv-edu-year { font-size:12px; color:#999; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(20px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  .loading { animation:spin 1s linear infinite; display:inline-block; }
+
+  /* CLOSE BTN */
+  .btn-close {
+    width:36px; height:36px; border-radius:999px;
+    border:1px solid var(--border); background:transparent;
+    color:var(--text2); cursor:pointer; font-size:18px;
+    display:flex; align-items:center; justify-content:center;
+    transition:all 0.2s;
+  }
+  .btn-close:hover { border-color:#ff6b6b; color:#ff6b6b; background:rgba(255,107,107,0.08); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:var(--bg3); border-radius:999px; }
+  ::-webkit-scrollbar-thumb:hover { background:var(--accent3); }
+
+  @media(max-width:768px) {
+    nav { padding:16px 20px; }
+    .hero { padding:120px 20px 60px; }
+    .cv-section { padding:0 20px 60px; }
+    .wizard-body { padding:24px 24px; }
+    .wizard-header { padding:24px 24px 20px; }
+    .wizard-footer { padding:20px 24px; }
+    .form-grid { grid-template-columns:1fr; }
+    h1.hero-title { font-size:42px; }
+    .preview-modal { flex-direction:column; max-height:95vh; border-radius:16px; }
+    .theme-panel { width:100%; min-width:unset; border-right:none; border-bottom:1px solid var(--border); max-height:200px; }
+    .theme-list { flex-direction:row; overflow-x:auto; overflow-y:hidden; padding:10px; gap:8px; }
+    .theme-panel-header { padding:12px 14px 10px; }
+    .theme-card { min-width:130px; }
+    .theme-panel > div:last-child { display:none; }
+    .preview-right { min-height:0; flex:1; }
+    .preview-scroll-area { padding:16px; }
+  }
+
+  /* SUCCESS ANIMATION */
+  .success-state {
+    padding:48px 40px; text-align:center;
+  }
+  .success-icon {
+    width:80px; height:80px; border-radius:50%;
+    background:var(--tag-bg); border:2px solid var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    font-size:36px; margin:0 auto 24px;
+    animation:fadeUp 0.5s ease both;
+  }
+  .success-title {
+    font-family:'Playfair Display',serif;
+    font-size:28px; font-weight:700; margin-bottom:8px;
+  }
+  .success-sub { color:var(--text2); font-size:15px; margin-bottom:32px; }
+</style>
 </head>
-<body data-theme="dark">
+<body>
 
-    <div id="toast" class="toast">Sai rồi bro!</div>
+<!-- NAVBAR -->
+<nav id="navbar">
+  <div class="logo">CV<span>Assist</span></div>
+  <div class="nav-actions">
+    <div style="display:flex;align-items:center;gap:8px;margin-right:8px;">
+      <span style="font-size:12px;color:var(--text3)">🌙</span>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="theme-icon moon">🌙</span>
+        <span class="theme-icon sun">☀️</span>
+      </button>
+      <span style="font-size:12px;color:var(--text3)">☀️</span>
+    </div>
+    <button class="btn-create-nav" onclick="openWizard()">+ Tạo CV Mới</button>
+  </div>
+</nav>
 
-    <div class="main-container">
-        <div class="info-panel">
-            <div class="header">
-                <h1>SUDOKU</h1>
-                <button id="theme-btn" class="theme-btn" title="Đổi giao diện">
-                    <i id="theme-icon" class="fa-solid fa-moon"></i>
-                </button>
-            </div>
-            
-            <div id="msg" class="status-message"></div>
-            
-            <div class="keypad">
-                <div class="key" onclick="inputValue(1)">1</div>
-                <div class="key" onclick="inputValue(2)">2</div>
-                <div class="key" onclick="inputValue(3)">3</div>
-                <div class="key" onclick="inputValue(4)">4</div>
-                <div class="key" onclick="inputValue(5)">5</div>
-                <div class="key" onclick="inputValue(6)">6</div>
-                <div class="key" onclick="inputValue(7)">7</div>
-                <div class="key" onclick="inputValue(8)">8</div>
-                <div class="key" onclick="inputValue(9)">9</div>
-                <div class="key del" onclick="inputValue('')">XÓA</div>
-                <button class="key new-game" onclick="confirmNewGame()">NEW GAME</button>
-            </div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-deco">CV</div>
+  <div class="hero-badge">AI Powered CV Builder</div>
+  <h1 class="hero-title">
+    Tạo CV<br>
+    <em>Gây Ấn Tượng</em>
+  </h1>
+  <p class="hero-sub">Chỉ cần cho chúng tôi biết công việc và ngành nghề bạn mong muốn — chúng tôi sẽ tạo ra một CV chuyên nghiệp hoàn hảo cho bạn.</p>
+  <div class="hero-cta">
+    <button class="btn-primary" onclick="openWizard()">
+      ✦ Tạo CV Ngay <span class="arrow">→</span>
+    </button>
+    <div class="hero-stat">
+      <span>🎯</span>
+      <span>Nhanh chóng & Chuyên nghiệp</span>
+    </div>
+  </div>
+</section>
+
+<!-- CV LIST -->
+<section class="cv-section">
+  <div class="section-header">
+    <div class="section-title">CV của <span>Bạn</span></div>
+    <div class="section-count" id="cvCount">0 CV</div>
+  </div>
+  <div class="cv-grid" id="cvGrid"></div>
+</section>
+
+<!-- WIZARD OVERLAY -->
+<div class="overlay" id="wizardOverlay">
+  <div class="wizard" id="wizard">
+
+    <!-- STEP 1: THÔNG TIN CÁ NHÂN -->
+    <div class="wizard-step" id="step1">
+      <div class="wizard-header">
+        <div class="wizard-step-indicator">
+          <div class="step-dot active" id="dot1"></div>
+          <div class="step-dot" id="dot2"></div>
+          <div class="step-dot" id="dot3"></div>
+          <div class="step-dot" id="dot4"></div>
         </div>
-
-        <div class="grid" id="board"></div>
+        <div class="wizard-step-label">Bước 1 / 4</div>
+        <div class="wizard-title">Thông tin cá nhân</div>
+        <div class="wizard-subtitle">Hãy cho chúng tôi biết một chút về bạn</div>
+      </div>
+      <div class="wizard-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Họ và Tên *</label>
+            <input class="form-input" id="fullName" placeholder="Nguyễn Văn A" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email *</label>
+            <input class="form-input" id="email" type="email" placeholder="example@email.com" />
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Số điện thoại</label>
+            <input class="form-input" id="phone" placeholder="+84 xxx xxx xxx" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Địa chỉ</label>
+            <input class="form-input" id="location" placeholder="TP. Hồ Chí Minh" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">LinkedIn / Website</label>
+          <input class="form-input" id="linkedin" placeholder="linkedin.com/in/yourname" />
+        </div>
+      </div>
+      <div class="wizard-footer">
+        <button class="btn-secondary" onclick="closeWizard()">Huỷ</button>
+        <button class="btn-next" onclick="goStep(2)">Tiếp theo →</button>
+      </div>
     </div>
 
-    <script>
-        const boardDiv = document.getElementById('board');
-        const toast = document.getElementById('toast');
-        const themeBtn = document.getElementById('theme-btn');
-        const themeIcon = document.getElementById('theme-icon');
-        const msgDiv = document.getElementById('msg');
-        let selected = null;
-        let currentQuiz = [];
-        let currentSol = [];
-        let wrongTimeout = null;
+    <!-- STEP 2: CÔNG VIỆC & NGÀNH -->
+    <div class="wizard-step" id="step2" style="display:none">
+      <div class="wizard-header">
+        <div class="wizard-step-indicator">
+          <div class="step-dot done"></div>
+          <div class="step-dot active"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+        </div>
+        <div class="wizard-step-label">Bước 2 / 4</div>
+        <div class="wizard-title">Vị trí & Ngành nghề</div>
+        <div class="wizard-subtitle">Bạn muốn ứng tuyển vị trí nào?</div>
+      </div>
+      <div class="wizard-body">
+        <div class="form-group">
+          <label class="form-label">Vị trí công việc mong muốn *</label>
+          <input class="form-input" id="jobTitle" placeholder="vd: Frontend Developer, Marketing Manager..." />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Ngành công nghiệp *</label>
+          <div class="chip-group" id="industryChips">
+            <div class="chip" onclick="selectChip(this,'industry')">💻 Công nghệ</div>
+            <div class="chip" onclick="selectChip(this,'industry')">📊 Tài chính</div>
+            <div class="chip" onclick="selectChip(this,'industry')">🏥 Y tế</div>
+            <div class="chip" onclick="selectChip(this,'industry')">🎓 Giáo dục</div>
+            <div class="chip" onclick="selectChip(this,'industry')">🛒 Bán lẻ</div>
+            <div class="chip" onclick="selectChip(this,'industry')">🏗️ Xây dựng</div>
+            <div class="chip" onclick="selectChip(this,'industry')">🎨 Sáng tạo</div>
+            <div class="chip" onclick="selectChip(this,'industry')">📦 Logistics</div>
+            <div class="chip" onclick="selectChip(this,'industry')">🍽️ F&B</div>
+            <div class="chip" onclick="selectChip(this,'industry')">✈️ Du lịch</div>
+            <div class="chip" onclick="selectChip(this,'industry')">⚖️ Pháp lý</div>
+            <div class="chip" onclick="selectChip(this,'industry')">🔬 Khoa học</div>
+          </div>
+          <input class="form-input" id="industryCustom" placeholder="Hoặc nhập ngành khác..." style="margin-top:10px;" />
+          <div class="input-hint">💡 Chọn một ngành hoặc tự nhập</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cấp độ kinh nghiệm</label>
+          <div class="chip-group" id="levelChips">
+            <div class="chip" onclick="selectChip(this,'level')">🌱 Fresher</div>
+            <div class="chip selected" onclick="selectChip(this,'level')">🔥 Junior (1-3 năm)</div>
+            <div class="chip" onclick="selectChip(this,'level')">⚡ Mid-level (3-5 năm)</div>
+            <div class="chip" onclick="selectChip(this,'level')">🦅 Senior (5+ năm)</div>
+            <div class="chip" onclick="selectChip(this,'level')">👑 Lead/Manager</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Số năm kinh nghiệm: <strong id="expVal">2</strong> năm</label>
+          <div class="range-wrap">
+            <input type="range" id="expRange" min="0" max="20" value="2" oninput="updateRange(this)" style="--val:10%" />
+            <div class="range-labels"><span>0 năm</span><span>5</span><span>10</span><span>15</span><span>20+</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="wizard-footer">
+        <button class="btn-secondary" onclick="goStep(1)">← Quay lại</button>
+        <button class="btn-next" onclick="goStep(3)">Tiếp theo →</button>
+      </div>
+    </div>
 
-        const base = [
-            1,2,3,4,5,6,7,8,9, 4,5,6,7,8,9,1,2,3, 7,8,9,1,2,3,4,5,6,
-            2,3,1,5,6,4,8,9,7, 5,6,4,8,9,7,2,3,1, 8,9,7,2,3,1,5,6,4,
-            3,1,2,6,4,5,9,7,8, 6,4,5,9,7,8,3,1,2, 9,7,8,3,1,2,6,4,5
-        ];
+    <!-- STEP 3: KỸ NĂNG & KINH NGHIỆM -->
+    <div class="wizard-step" id="step3" style="display:none">
+      <div class="wizard-header">
+        <div class="wizard-step-indicator">
+          <div class="step-dot done"></div>
+          <div class="step-dot done"></div>
+          <div class="step-dot active"></div>
+          <div class="step-dot"></div>
+        </div>
+        <div class="wizard-step-label">Bước 3 / 4</div>
+        <div class="wizard-title">Kỹ năng & Kinh nghiệm</div>
+        <div class="wizard-subtitle">Hãy nổi bật với những điểm mạnh của bạn</div>
+      </div>
+      <div class="wizard-body">
+        <div class="form-group">
+          <label class="form-label">Kỹ năng chính (nhấn Enter để thêm)</label>
+          <div class="tag-input-wrap" onclick="document.getElementById('skillInput').focus()">
+            <div id="skillTags"></div>
+            <input class="tag-real-input" id="skillInput" placeholder="vd: JavaScript, React, Python..." onkeydown="addTag(event,'skill')" />
+          </div>
+          <div class="input-hint">💡 Thêm 4-8 kỹ năng nổi bật nhất</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Kinh nghiệm làm việc gần đây nhất</label>
+          <div class="form-grid">
+            <input class="form-input" id="lastCompany" placeholder="Tên công ty" />
+            <input class="form-input" id="lastPosition" placeholder="Chức danh" />
+          </div>
+          <div class="form-grid" style="margin-top:10px">
+            <input class="form-input" id="lastFrom" placeholder="Từ năm (vd: 2022)" />
+            <input class="form-input" id="lastTo" placeholder="Đến năm (vd: 2024 / Hiện tại)" />
+          </div>
+          <textarea class="form-textarea" id="lastDesc" placeholder="Mô tả ngắn những gì bạn đã làm, thành tích nổi bật..." style="margin-top:10px;"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Học vấn</label>
+          <div class="form-grid">
+            <input class="form-input" id="school" placeholder="Trường đại học" />
+            <input class="form-input" id="degree" placeholder="Bằng cấp / Chuyên ngành" />
+          </div>
+          <input class="form-input" id="gradYear" placeholder="Năm tốt nghiệp" style="margin-top:10px;" />
+        </div>
+      </div>
+      <div class="wizard-footer">
+        <button class="btn-secondary" onclick="goStep(2)">← Quay lại</button>
+        <button class="btn-next" onclick="goStep(4)">Tiếp theo →</button>
+      </div>
+    </div>
 
-        function confirmNewGame() {
-            const isPlaying = document.querySelectorAll('.fixed-correct').length > 0;
-            if (isPlaying && !confirm("Bỏ ván này để chơi ván mới hả bro?")) return;
-            startNewGame();
-        }
+    <!-- STEP 4: PHONG CÁCH -->
+    <div class="wizard-step" id="step4" style="display:none">
+      <div class="wizard-header">
+        <div class="wizard-step-indicator">
+          <div class="step-dot done"></div>
+          <div class="step-dot done"></div>
+          <div class="step-dot done"></div>
+          <div class="step-dot active"></div>
+        </div>
+        <div class="wizard-step-label">Bước 4 / 4</div>
+        <div class="wizard-title">Phong cách CV</div>
+        <div class="wizard-subtitle">Chọn màu sắc và phong cách thể hiện bạn</div>
+      </div>
+      <div class="wizard-body">
+        <div class="form-group">
+          <label class="form-label">Màu chủ đạo</label>
+          <div class="chip-group" id="colorChips">
+            <div class="chip selected" onclick="selectColor(this,'#2563eb')" style="border-color:#2563eb;color:#2563eb;background:rgba(37,99,235,0.1)">🔵 Classic Blue</div>
+            <div class="chip" onclick="selectColor(this,'#7c3aed')" style="">💜 Violet</div>
+            <div class="chip" onclick="selectColor(this,'#059669')" style="">💚 Emerald</div>
+            <div class="chip" onclick="selectColor(this,'#dc2626')" style="">❤️ Ruby</div>
+            <div class="chip" onclick="selectColor(this,'#d97706')" style="">🟠 Amber</div>
+            <div class="chip" onclick="selectColor(this,'#0891b2')" style="">🩵 Cyan</div>
+            <div class="chip" onclick="selectColor(this,'#1a1918')" style="">🖤 Midnight</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tóm tắt bản thân (tuỳ chọn)</label>
+          <textarea class="form-textarea" id="summary" placeholder="Mô tả ngắn gọn về bản thân, điểm mạnh và định hướng nghề nghiệp của bạn..."></textarea>
+          <div class="input-hint">✦ Một đoạn ngắn 2-4 câu để gây ấn tượng đầu tiên</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Ngôn ngữ nói (nhấn Enter để thêm)</label>
+          <div class="tag-input-wrap" onclick="document.getElementById('langInput').focus()">
+            <div id="langTags"></div>
+            <input class="tag-real-input" id="langInput" placeholder="vd: Tiếng Việt, English..." onkeydown="addTag(event,'lang')" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Chứng chỉ / Giải thưởng (nhấn Enter để thêm)</label>
+          <div class="tag-input-wrap" onclick="document.getElementById('certInput').focus()">
+            <div id="certTags"></div>
+            <input class="tag-real-input" id="certInput" placeholder="vd: AWS Certified, TOEIC 850..." onkeydown="addTag(event,'cert')" />
+          </div>
+        </div>
+      </div>
+      <div class="wizard-footer">
+        <button class="btn-secondary" onclick="goStep(3)">← Quay lại</button>
+        <button class="btn-next" onclick="generateCV()">✦ Tạo CV</button>
+      </div>
+    </div>
 
-        function startNewGame() {
-            const map = [1,2,3,4,5,6,7,8,9].sort(() => Math.random() - 0.5);
-            currentSol = base.map(n => map[n-1]);
-            currentQuiz = currentSol.map(v => Math.random() > 0.55 ? v : 0);
-            render();
-            msgDiv.innerText = "";
-            selected = null;
-        }
+    <!-- SUCCESS STATE -->
+    <div id="stepSuccess" style="display:none">
+      <div class="success-state">
+        <div class="success-icon">✓</div>
+        <div class="success-title">CV đã được tạo!</div>
+        <div class="success-sub">CV của bạn đã được lưu và sẵn sàng để xem xét.</div>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+          <button class="btn-next" onclick="viewLastCV()">👁 Xem CV</button>
+          <button class="btn-secondary" onclick="closeWizard()">Về trang chủ</button>
+        </div>
+      </div>
+    </div>
 
-        function render() {
-            boardDiv.innerHTML = "";
-            currentQuiz.forEach((val, i) => {
-                const cell = document.createElement('div');
-                cell.className = 'cell';
-                if (val !== 0) { cell.innerText = val; cell.classList.add('fixed'); }
-                const r = Math.floor(i/9), c = i%9;
-                cell.dataset.r = r; cell.dataset.c = c; cell.dataset.index = i;
-                cell.onclick = () => {
-                    if (cell.classList.contains('fixed') || cell.classList.contains('fixed-correct')) return;
-                    if (selected) selected.classList.remove('selected');
-                    selected = cell; selected.classList.add('selected');
-                    highlight(r, c);
-                };
-                boardDiv.appendChild(cell);
-            });
-        }
+  </div>
+</div>
 
-        function highlight(r, c) {
-            document.querySelectorAll('.cell').forEach(el => {
-                el.classList.remove('highlight');
-                if (el.dataset.r == r || el.dataset.c == c) el.classList.add('highlight');
-            });
-        }
+<!-- CV PREVIEW OVERLAY -->
+<div class="overlay" id="previewOverlay">
+  <div class="preview-modal">
 
-        function inputValue(n) {
-            if (!selected) return;
-            
-            clearTimeout(wrongTimeout);
-            selected.classList.remove('wrong');
-            toast.classList.remove('show');
+    <!-- LEFT: THEME PANEL -->
+    <div class="theme-panel">
+      <div class="theme-panel-header">
+        <div class="theme-panel-title">🎨 Chọn Theme</div>
+        <div class="theme-panel-sub">Thay đổi realtime</div>
+      </div>
+      <div class="theme-list" id="themeList">
 
-            const idx = selected.dataset.index;
-            if (n === '') { selected.innerText = ''; return; }
+        <div class="theme-card active" data-theme-id="classic" onclick="selectCVTheme(this,'classic')">
+          <div class="theme-preview-mini" style="background:#fff;border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;height:56px;padding:6px;">
+            <div style="height:6px;background:#2563eb;border-radius:2px;margin-bottom:4px;"></div>
+            <div style="height:3px;background:#1a1918;border-radius:2px;width:70%;margin-bottom:3px;"></div>
+            <div style="height:2px;background:#9ca3af;border-radius:2px;width:50%;margin-bottom:4px;"></div>
+            <div style="display:flex;gap:3px;flex-wrap:wrap;">
+              <div style="height:8px;width:28px;background:#dbeafe;border-radius:999px;"></div>
+              <div style="height:8px;width:22px;background:#dbeafe;border-radius:999px;"></div>
+            </div>
+          </div>
+          <div class="theme-card-name">Classic Blue</div>
+          <div class="theme-card-desc">Chuyên nghiệp, tin cậy</div>
+        </div>
 
-            if (n == currentSol[idx]) {
-                selected.innerText = n;
-                selected.classList.add('correct', 'fixed-correct');
-                selected.classList.remove('selected');
-                selected = null;
-                document.querySelectorAll('.cell').forEach(el => el.classList.remove('highlight'));
-                checkWin();
-            } else {
-                selected.innerText = n;
-                selected.classList.add('wrong');
-                toast.classList.add('show');
-                let targetCell = selected;
-                wrongTimeout = setTimeout(() => {
-                    if (targetCell.classList.contains('wrong')) {
-                        targetCell.innerText = '';
-                        targetCell.classList.remove('wrong');
-                        toast.classList.remove('show');
-                    }
-                }, 250);
-            }
-        }
+        <div class="theme-card" data-theme-id="executive" onclick="selectCVTheme(this,'executive')">
+          <div class="theme-preview-mini" style="background:#1a1a2e;border-radius:6px;overflow:hidden;height:56px;padding:6px;">
+            <div style="height:6px;background:linear-gradient(90deg,#c9a96e,#e8c98a);border-radius:2px;margin-bottom:4px;"></div>
+            <div style="height:3px;background:#f0f0f5;border-radius:2px;width:70%;margin-bottom:3px;"></div>
+            <div style="height:2px;background:#8888aa;border-radius:2px;width:50%;margin-bottom:4px;"></div>
+            <div style="display:flex;gap:3px;">
+              <div style="height:8px;width:28px;background:rgba(201,169,110,0.3);border-radius:999px;"></div>
+              <div style="height:8px;width:22px;background:rgba(201,169,110,0.3);border-radius:999px;"></div>
+            </div>
+          </div>
+          <div class="theme-card-name">Executive Dark</div>
+          <div class="theme-card-desc">Sang trọng, ấn tượng</div>
+        </div>
 
-        function checkWin() {
-            const filled = document.querySelectorAll('.fixed-correct').length + document.querySelectorAll('.fixed').length;
-            if (filled === 81) msgDiv.innerText = "THẮNG RỒI! 🎉";
-        }
+        <div class="theme-card" data-theme-id="minimal" onclick="selectCVTheme(this,'minimal')">
+          <div class="theme-preview-mini" style="background:#fafafa;border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;height:56px;padding:6px;">
+            <div style="height:3px;background:#1a1918;border-radius:2px;width:70%;margin-bottom:6px;"></div>
+            <div style="height:2px;background:#9ca3af;border-radius:2px;width:50%;margin-bottom:8px;"></div>
+            <div style="height:1px;background:#e5e7eb;margin-bottom:6px;"></div>
+            <div style="display:flex;gap:3px;">
+              <div style="height:8px;width:28px;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:2px;"></div>
+              <div style="height:8px;width:22px;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:2px;"></div>
+            </div>
+          </div>
+          <div class="theme-card-name">Minimalist</div>
+          <div class="theme-card-desc">Tinh tế, sạch sẽ</div>
+        </div>
 
-        themeBtn.onclick = () => {
-            const isDark = document.body.getAttribute('data-theme') === 'dark';
-            document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
-            themeIcon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-        };
+        <div class="theme-card" data-theme-id="creative" onclick="selectCVTheme(this,'creative')">
+          <div class="theme-preview-mini" style="background:#fff;border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;height:56px;display:flex;">
+            <div style="width:28%;background:linear-gradient(180deg,#7c3aed,#a855f7);padding:5px 4px;">
+              <div style="height:20px;width:20px;border-radius:50%;background:rgba(255,255,255,0.3);margin:0 auto 4px;"></div>
+              <div style="height:2px;background:rgba(255,255,255,0.5);border-radius:2px;margin-bottom:2px;"></div>
+              <div style="height:2px;background:rgba(255,255,255,0.3);border-radius:2px;"></div>
+            </div>
+            <div style="flex:1;padding:5px 4px;">
+              <div style="height:3px;background:#1a1918;border-radius:2px;margin-bottom:3px;"></div>
+              <div style="height:2px;background:#9ca3af;border-radius:2px;width:70%;margin-bottom:6px;"></div>
+              <div style="height:2px;background:#e5e7eb;border-radius:2px;margin-bottom:4px;"></div>
+              <div style="height:2px;background:#e5e7eb;border-radius:2px;width:80%;"></div>
+            </div>
+          </div>
+          <div class="theme-card-name">Creative Split</div>
+          <div class="theme-card-desc">Sáng tạo, nổi bật</div>
+        </div>
 
-        startNewGame();
-    </script>
+        <div class="theme-card" data-theme-id="nature" onclick="selectCVTheme(this,'nature')">
+          <div class="theme-preview-mini" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;overflow:hidden;height:56px;padding:6px;">
+            <div style="height:6px;background:linear-gradient(90deg,#059669,#34d399);border-radius:2px;margin-bottom:4px;"></div>
+            <div style="height:3px;background:#1a1918;border-radius:2px;width:70%;margin-bottom:3px;"></div>
+            <div style="height:2px;background:#6b7280;border-radius:2px;width:50%;margin-bottom:4px;"></div>
+            <div style="display:flex;gap:3px;">
+              <div style="height:8px;width:28px;background:#dcfce7;border-radius:999px;border:1px solid #6ee7b7;"></div>
+              <div style="height:8px;width:22px;background:#dcfce7;border-radius:999px;border:1px solid #6ee7b7;"></div>
+            </div>
+          </div>
+          <div class="theme-card-name">Nature</div>
+          <div class="theme-card-desc">Tươi mát, thân thiện</div>
+        </div>
+
+        <div class="theme-card" data-theme-id="corporate" onclick="selectCVTheme(this,'corporate')">
+          <div class="theme-preview-mini" style="background:#fff;border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;height:56px;padding:0;">
+            <div style="background:#1e3a5f;padding:8px 6px;">
+              <div style="height:3px;background:#fff;border-radius:2px;width:60%;margin-bottom:2px;"></div>
+              <div style="height:2px;background:rgba(255,255,255,0.5);border-radius:2px;width:40%;"></div>
+            </div>
+            <div style="padding:5px 6px;">
+              <div style="height:2px;background:#1e3a5f;border-radius:2px;margin-bottom:3px;"></div>
+              <div style="height:2px;background:#9ca3af;border-radius:2px;width:70%;margin-bottom:3px;"></div>
+              <div style="display:flex;gap:3px;">
+                <div style="height:8px;width:28px;background:#dbeafe;border-radius:2px;"></div>
+                <div style="height:8px;width:22px;background:#dbeafe;border-radius:2px;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="theme-card-name">Corporate</div>
+          <div class="theme-card-desc">Formal, đáng tin cậy</div>
+        </div>
+
+      </div>
+
+      <div style="padding:20px 16px;border-top:1px solid var(--border);">
+        <button class="btn-next" style="width:100%;justify-content:center;font-size:14px;" id="exportPdfBtn" onclick="printCV()">⬇ Xuất PDF</button>
+      </div>
+    </div>
+
+    <!-- RIGHT: LIVE PREVIEW -->
+    <div class="preview-right">
+      <div class="preview-toolbar-new">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="font-weight:600;font-size:15px;color:var(--text)">Xem trước CV</div>
+          <div id="activeThemeLabel" style="font-size:11px;padding:3px 10px;border-radius:999px;background:var(--tag-bg);color:var(--accent);border:1px solid var(--accent3);font-weight:600;">Classic Blue</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn-next" style="font-size:12px;padding:8px 16px;" id="exportPdfBtnMobile" onclick="printCV()">⬇ PDF</button>
+          <button class="btn-close" onclick="closePreview()">✕</button>
+        </div>
+      </div>
+      <div class="preview-scroll-area">
+        <div class="cv-page-wrap">
+          <div id="cvDocContainer"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ===== STATE =====
+let cvData = JSON.parse(localStorage.getItem('cvassist_cvs') || '[]');
+let selectedIndustry = '';
+let selectedLevel = 'Junior (1-3 năm)';
+let selectedColor = '#2563eb';
+let skillTags = [];
+let langTags = [];
+let certTags = [];
+let lastCreatedId = null;
+
+// ===== THEME =====
+function toggleTheme() {
+  const html = document.documentElement;
+  html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('cvassist_theme', html.dataset.theme);
+}
+const savedTheme = localStorage.getItem('cvassist_theme');
+if(savedTheme) document.documentElement.dataset.theme = savedTheme;
+
+// ===== RANGE =====
+function updateRange(el) {
+  document.getElementById('expVal').textContent = el.value;
+  const pct = (el.value / el.max * 100) + '%';
+  el.style.setProperty('--val', pct);
+}
+
+// ===== CHIPS =====
+function selectChip(el, group) {
+  if(group === 'industry') {
+    document.querySelectorAll('#industryChips .chip').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedIndustry = el.textContent.replace(/^[^\s]+\s/, '').trim();
+  } else if(group === 'level') {
+    document.querySelectorAll('#levelChips .chip').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedLevel = el.textContent.replace(/^[^\s]+\s/, '').trim();
+  }
+}
+
+function selectColor(el, color) {
+  document.querySelectorAll('#colorChips .chip').forEach(c => {
+    c.classList.remove('selected');
+    c.style.borderColor = '';
+    c.style.color = '';
+    c.style.background = '';
+  });
+  el.classList.add('selected');
+  el.style.borderColor = color;
+  el.style.color = color;
+  el.style.background = color + '20';
+  selectedColor = color;
+}
+
+// ===== TAGS =====
+function addTag(event, type) {
+  if(event.key === 'Enter' || event.key === ',') {
+    event.preventDefault();
+    const input = document.getElementById(type + 'Input');
+    const val = input.value.trim().replace(/,$/, '');
+    if(!val) return;
+    const arr = type === 'skill' ? skillTags : type === 'lang' ? langTags : certTags;
+    if(arr.includes(val)) return;
+    arr.push(val);
+    renderTags(type);
+    input.value = '';
+  }
+}
+
+function removeTag(type, idx) {
+  if(type==='skill') skillTags.splice(idx,1);
+  else if(type==='lang') langTags.splice(idx,1);
+  else certTags.splice(idx,1);
+  renderTags(type);
+}
+
+function renderTags(type) {
+  const arr = type === 'skill' ? skillTags : type === 'lang' ? langTags : certTags;
+  const cont = document.getElementById(type + 'Tags');
+  cont.innerHTML = arr.map((t,i) => `
+    <div class="tag-item">
+      ${t}
+      <span class="tag-remove" onclick="removeTag('${type}',${i})">×</span>
+    </div>
+  `).join('');
+}
+
+// ===== WIZARD =====
+function openWizard() {
+  resetWizard();
+  document.getElementById('wizardOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeWizard() {
+  document.getElementById('wizardOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+  setTimeout(resetWizard, 400);
+}
+
+function resetWizard() {
+  goStep(1, true);
+  skillTags = []; langTags = []; certTags = [];
+  renderTags('skill'); renderTags('lang'); renderTags('cert');
+  selectedIndustry = ''; selectedColor = '#2563eb';
+  document.getElementById('stepSuccess').style.display = 'none';
+  ['fullName','email','phone','location','linkedin','jobTitle','industryCustom',
+   'lastCompany','lastPosition','lastFrom','lastTo','lastDesc',
+   'school','degree','gradYear','summary'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  document.getElementById('expRange').value = 2;
+  document.getElementById('expVal').textContent = 2;
+  document.querySelectorAll('#industryChips .chip').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('#levelChips .chip').forEach((c,i) => {
+    c.classList.toggle('selected', i===1);
+  });
+  selectedLevel = 'Junior (1-3 năm)';
+  document.querySelectorAll('#colorChips .chip').forEach((c,i) => {
+    if(i===0) { c.classList.add('selected'); c.style.borderColor='#2563eb'; c.style.color='#2563eb'; c.style.background='rgba(37,99,235,0.1)'; }
+    else { c.classList.remove('selected'); c.style.borderColor=''; c.style.color=''; c.style.background=''; }
+  });
+}
+
+function goStep(n, silent) {
+  [1,2,3,4].forEach(i => {
+    const el = document.getElementById('step'+i);
+    if(el) el.style.display = i===n ? 'block' : 'none';
+  });
+  if(!silent) updateDots(n);
+}
+
+function updateDots(current) {
+  [1,2,3,4].forEach(i => {
+    const d = document.getElementById('dot'+i);
+    if(!d) return;
+    d.className = 'step-dot ' + (i < current ? 'done' : i===current ? 'active' : '');
+  });
+}
+
+// ===== GENERATE =====
+function generateCV() {
+  const name = document.getElementById('fullName').value.trim() || 'Tên của bạn';
+  const email = document.getElementById('email').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const location = document.getElementById('location').value.trim();
+  const linkedin = document.getElementById('linkedin').value.trim();
+  const jobTitle = document.getElementById('jobTitle').value.trim() || 'Vị trí mong muốn';
+  const industry = document.getElementById('industryCustom').value.trim() || selectedIndustry || 'Ngành công nghiệp';
+  const exp = document.getElementById('expRange').value;
+  const lastCompany = document.getElementById('lastCompany').value.trim();
+  const lastPosition = document.getElementById('lastPosition').value.trim();
+  const lastFrom = document.getElementById('lastFrom').value.trim();
+  const lastTo = document.getElementById('lastTo').value.trim();
+  const lastDesc = document.getElementById('lastDesc').value.trim();
+  const school = document.getElementById('school').value.trim();
+  const degree = document.getElementById('degree').value.trim();
+  const gradYear = document.getElementById('gradYear').value.trim();
+  const summary = document.getElementById('summary').value.trim();
+
+  const cv = {
+    id: Date.now(),
+    createdAt: new Date().toLocaleDateString('vi-VN'),
+    name, email, phone, location, linkedin,
+    jobTitle, industry, level: selectedLevel,
+    experience: exp,
+    skills: [...skillTags],
+    lastCompany, lastPosition, lastFrom, lastTo, lastDesc,
+    school, degree, gradYear,
+    summary,
+    languages: [...langTags],
+    certs: [...certTags],
+    color: selectedColor
+  };
+
+  cvData.unshift(cv);
+  localStorage.setItem('cvassist_cvs', JSON.stringify(cvData));
+  lastCreatedId = cv.id;
+
+  [1,2,3,4].forEach(i => { const el = document.getElementById('step'+i); if(el) el.style.display='none'; });
+  document.getElementById('stepSuccess').style.display = 'block';
+  renderCVGrid();
+}
+
+function viewLastCV() {
+  closeWizard();
+  const cv = cvData.find(c => c.id === lastCreatedId);
+  if(cv) openPreview(cv);
+}
+
+// ===== RENDER GRID =====
+function renderCVGrid() {
+  const grid = document.getElementById('cvGrid');
+  const count = document.getElementById('cvCount');
+  count.textContent = cvData.length + ' CV';
+
+  if(cvData.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📄</div>
+        <h3>Chưa có CV nào</h3>
+        <p>Bấm "Tạo CV Ngay" để bắt đầu tạo CV chuyên nghiệp đầu tiên của bạn!</p>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = cvData.map((cv, idx) => `
+    <div class="cv-card" style="animation-delay:${idx*0.05}s" onclick="openPreview(cvData.find(c=>c.id===${cv.id}))">
+      <div class="cv-card-header">
+        <div class="cv-card-industry">${cv.industry}</div>
+        <div class="cv-card-name">${cv.name}</div>
+      </div>
+      <div class="cv-card-body">
+        <div class="cv-card-job">${cv.jobTitle}</div>
+        <div class="cv-card-skills">
+          ${cv.skills.slice(0,4).map(s => `<div class="skill-tag">${s}</div>`).join('')}
+          ${cv.skills.length > 4 ? `<div class="skill-tag">+${cv.skills.length-4}</div>` : ''}
+        </div>
+      </div>
+      <div class="cv-card-footer">
+        <div class="cv-card-date">📅 ${cv.createdAt}</div>
+        <div class="cv-card-actions" onclick="event.stopPropagation()">
+          <button class="btn-icon" title="Xem CV" onclick="openPreview(cvData.find(c=>c.id===${cv.id}))">👁</button>
+          <button class="btn-icon danger" title="Xoá CV" onclick="deleteCV(${cv.id})">🗑</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== DELETE =====
+function deleteCV(id) {
+  if(!confirm('Bạn có chắc muốn xoá CV này không?')) return;
+  cvData = cvData.filter(c => c.id !== id);
+  localStorage.setItem('cvassist_cvs', JSON.stringify(cvData));
+  renderCVGrid();
+}
+
+// ===== CV PDF THEMES =====
+const CV_THEMES = {
+  classic: {
+    name: 'Classic Blue',
+    render: (cv) => {
+      const c = cv.color || '#2563eb';
+      const cL = hexA(c,0.1);
+      const {sk,ex,ed,la,ce} = parts(cv,c,cL);
+      return `<div style="font-family:Arial,sans-serif;padding:44px 52px;background:#fff;color:#1a1918;min-height:1100px;box-sizing:border-box;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:22px;margin-bottom:26px;border-bottom:3px solid ${c};">
+          <div><div style="font-size:34px;font-weight:900;color:#1a1918;line-height:1.1;margin-bottom:4px;">${cv.name}</div>
+          <div style="font-size:15px;color:#666;font-weight:300;margin-bottom:10px;">${cv.jobTitle}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;">${ct(cv)}</div></div>
+          <div style="text-align:right;flex-shrink:0;padding-left:20px;">
+            <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${c};margin-bottom:5px;">${cv.industry}</div>
+            <div style="font-size:30px;font-weight:900;color:${c};line-height:1;">${cv.experience}</div>
+            <div style="font-size:10px;color:#aaa;">Năm kinh nghiệm</div>
+          </div>
+        </div>
+        ${cv.summary?`<div style="font-size:13px;line-height:1.8;color:#444;font-style:italic;padding:13px 17px;border-left:4px solid ${c};background:#f8f9ff;border-radius:0 6px 6px 0;margin-bottom:24px;">"${cv.summary}"</div>`:''}
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;">
+          <div>${sb('Kinh nghiệm',ex,c)}${sb('Học vấn',ed,c)}</div>
+          <div>${sk?sb('Kỹ năng',`<div style="display:flex;flex-wrap:wrap;gap:5px;">${sk}</div>`,c):''}${la?sb('Ngôn ngữ',`<div style="display:flex;flex-wrap:wrap;gap:5px;">${la}</div>`,c):''}${ce?sb('Chứng chỉ',`<ul style="padding:0;margin:0;">${ce}</ul>`,c):''}${sb('Cấp độ',`<span style="padding:4px 13px;background:${cL};color:${c};border-radius:999px;font-size:11px;font-weight:700;display:inline-block;">${cv.level}</span>`,c)}</div>
+        </div></div>`;
+    }
+  },
+  executive: {
+    name: 'Executive Dark',
+    render: (cv) => {
+      const g='#c9a96e', gL='rgba(201,169,110,0.14)';
+      const {sk,ex,ed,la,ce} = parts(cv,g,gL,false,true);
+      return `<div style="font-family:Arial,sans-serif;background:#1a1a2e;color:#f0f0f5;min-height:1100px;box-sizing:border-box;">
+        <div style="background:linear-gradient(135deg,#12122a,#1e1e3f);padding:44px 52px 30px;border-bottom:2px solid ${g};">
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+            <div><div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:${g};margin-bottom:9px;font-weight:700;">${cv.industry}</div>
+            <div style="font-size:36px;font-weight:900;color:#fff;line-height:1.05;margin-bottom:5px;">${cv.name}</div>
+            <div style="font-size:15px;color:#8888aa;font-weight:300;">${cv.jobTitle}</div></div>
+            <div style="text-align:right;flex-shrink:0;padding-left:20px;">
+              <div style="font-size:40px;font-weight:900;color:${g};line-height:1;">${cv.experience}</div>
+              <div style="font-size:10px;color:#8888aa;letter-spacing:1px;text-transform:uppercase;">Năm KN</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;">${ctD(cv,g)}</div>
+        </div>
+        <div style="padding:30px 52px;background:#1a1a2e;">
+          ${cv.summary?`<div style="font-size:13px;line-height:1.8;color:#aaa;font-style:italic;padding:14px 18px;border-left:3px solid ${g};background:rgba(201,169,110,0.05);border-radius:0 8px 8px 0;margin-bottom:26px;">"${cv.summary}"</div>`:''}
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;">
+            <div>${sbD('Kinh nghiệm',ex,g)}${sbD('Học vấn',ed,g)}</div>
+            <div>${sk?sbD('Kỹ năng',`<div style="display:flex;flex-wrap:wrap;gap:5px;">${sk}</div>`,g):''}${la?sbD('Ngôn ngữ',`<div style="display:flex;flex-wrap:wrap;gap:5px;">${la}</div>`,g):''}${ce?sbD('Chứng chỉ',`<ul style="padding:0;margin:0;">${ce}</ul>`,g):''}${sbD('Cấp độ',`<span style="padding:4px 13px;background:${gL};color:${g};border-radius:999px;font-size:11px;font-weight:700;display:inline-block;border:1px solid rgba(201,169,110,0.25);">${cv.level}</span>`,g)}</div>
+          </div>
+        </div></div>`;
+    }
+  },
+  minimal: {
+    name: 'Minimalist',
+    render: (cv) => {
+      const {ex,ed} = parts(cv,'#1a1918','#f3f4f6');
+      return `<div style="font-family:Georgia,serif;padding:52px 60px;background:#fafafa;color:#1a1918;min-height:1100px;box-sizing:border-box;">
+        <div style="margin-bottom:32px;">
+          <div style="font-size:40px;font-weight:900;letter-spacing:-1px;color:#1a1918;margin-bottom:3px;">${cv.name}</div>
+          <div style="font-size:13px;color:#9ca3af;letter-spacing:2px;text-transform:uppercase;font-family:Arial,sans-serif;margin-bottom:12px;">${cv.jobTitle}</div>
+          <div style="height:1px;background:#e5e7eb;margin-bottom:12px;"></div>
+          <div style="display:flex;flex-wrap:wrap;gap:14px;font-family:Arial,sans-serif;">${ct(cv,'#6b7280')}</div>
+        </div>
+        ${cv.summary?`<div style="font-size:13px;line-height:1.9;color:#4b5563;margin-bottom:28px;font-style:italic;border-left:2px solid #d1d5db;padding-left:14px;">${cv.summary}</div>`:''}
+        <div style="display:grid;grid-template-columns:3fr 2fr;gap:36px;">
+          <div>${sbMin('KINH NGHIỆM',ex)}${sbMin('HỌC VẤN',ed)}</div>
+          <div>
+            ${cv.skills.length?sbMin('KỸ NĂNG',cv.skills.map(s=>`<div style="font-size:12px;padding:4px 0;border-bottom:1px dotted #e5e7eb;color:#374151;font-family:Arial,sans-serif;">— ${s}</div>`).join('')):''}
+            ${cv.languages?.length?sbMin('NGÔN NGỮ',cv.languages.map(l=>`<div style="font-size:12px;padding:4px 0;border-bottom:1px dotted #e5e7eb;color:#374151;font-family:Arial,sans-serif;">— ${l}</div>`).join('')):''}
+            ${cv.certs?.length?sbMin('CHỨNG CHỈ',cv.certs.map(c=>`<div style="font-size:12px;padding:4px 0;border-bottom:1px dotted #e5e7eb;color:#4b5563;font-family:Arial,sans-serif;">— ${c}</div>`).join('')):''}
+            ${sbMin('CẤP ĐỘ & NGÀNH',`<div style="font-size:12px;color:#374151;font-family:Arial,sans-serif;">${cv.level}</div><div style="font-size:11px;color:#9ca3af;font-family:Arial,sans-serif;">${cv.industry}</div>`)}
+          </div>
+        </div></div>`;
+    }
+  },
+  creative: {
+    name: 'Creative Split',
+    render: (cv) => {
+      const c = cv.color || '#7c3aed';
+      const cL = hexA(c,0.1);
+      const {ex,ed,ce} = parts(cv,c,cL);
+      return `<div style="font-family:Arial,sans-serif;display:flex;background:#fff;min-height:1100px;box-sizing:border-box;">
+        <div style="width:210px;min-width:210px;background:linear-gradient(180deg,${c},${adjC(c,40)});padding:32px 18px;color:#fff;flex-shrink:0;">
+          <div style="width:66px;height:66px;border-radius:50%;background:rgba(255,255,255,0.22);margin:0 auto 14px;display:flex;align-items:center;justify-content:center;border:3px solid rgba(255,255,255,0.45);">
+            <span style="font-size:26px;font-weight:900;color:#fff;">${cv.name.charAt(0).toUpperCase()}</span>
+          </div>
+          <div style="text-align:center;margin-bottom:20px;padding-bottom:18px;border-bottom:1px solid rgba(255,255,255,0.2);">
+            <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;opacity:0.65;margin-bottom:6px;">${cv.industry}</div>
+            <div style="font-size:18px;font-weight:900;line-height:1.25;margin-bottom:3px;">${cv.name}</div>
+            <div style="font-size:11px;opacity:0.8;">${cv.jobTitle}</div>
+          </div>
+          <div style="margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.18);">
+            ${cv.email?`<div style="font-size:10px;margin-bottom:5px;opacity:0.85;word-break:break-all;">✉ ${cv.email}</div>`:''}
+            ${cv.phone?`<div style="font-size:10px;margin-bottom:5px;opacity:0.85;">📱 ${cv.phone}</div>`:''}
+            ${cv.location?`<div style="font-size:10px;margin-bottom:5px;opacity:0.85;">📍 ${cv.location}</div>`:''}
+          </div>
+          ${cv.skills.length?`<div style="margin-bottom:16px;"><div style="font-size:8px;letter-spacing:2px;font-weight:700;opacity:0.55;text-transform:uppercase;margin-bottom:8px;">Kỹ năng</div>${cv.skills.map(s=>`<div style="font-size:10px;padding:4px 9px;background:rgba(255,255,255,0.14);border-radius:3px;margin-bottom:4px;">${s}</div>`).join('')}</div>`:''}
+          ${cv.languages?.length?`<div><div style="font-size:8px;letter-spacing:2px;font-weight:700;opacity:0.55;text-transform:uppercase;margin-bottom:7px;">Ngôn ngữ</div>${cv.languages.map(l=>`<div style="font-size:10px;opacity:0.82;margin-bottom:2px;">• ${l}</div>`).join('')}</div>`:''}
+        </div>
+        <div style="flex:1;padding:34px 32px;overflow:hidden;">
+          <div style="font-size:28px;font-weight:900;color:#1a1918;margin-bottom:3px;">${cv.name}</div>
+          <div style="font-size:13px;color:${c};font-weight:600;letter-spacing:0.5px;margin-bottom:14px;">${cv.jobTitle} · ${cv.experience} năm KN</div>
+          ${cv.summary?`<div style="font-size:12px;line-height:1.7;color:#555;margin-bottom:20px;padding:11px 14px;background:${hexA(c,0.05)};border-radius:6px;border-left:3px solid ${c};">"${cv.summary}"</div>`:''}
+          ${sb('Kinh nghiệm làm việc',ex,c)}
+          ${sb('Học vấn',ed,c)}
+          ${ce?sb('Chứng chỉ',`<ul style="padding:0;margin:0;">${ce}</ul>`,c):''}
+          <div style="margin-top:14px;"><span style="padding:4px 13px;background:${hexA(c,0.1)};color:${c};border-radius:999px;font-size:11px;font-weight:700;">${cv.level}</span></div>
+        </div></div>`;
+    }
+  },
+  nature: {
+    name: 'Nature',
+    render: (cv) => {
+      const c='#059669', cL='#dcfce7';
+      const {sk,ex,ed,la,ce} = parts(cv,c,cL);
+      return `<div style="font-family:Arial,sans-serif;background:#f0fdf4;color:#1a1918;min-height:1100px;box-sizing:border-box;">
+        <div style="background:linear-gradient(90deg,#059669,#34d399);padding:36px 52px 26px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div><div style="font-size:34px;font-weight:900;color:#fff;margin-bottom:3px;">${cv.name}</div>
+            <div style="font-size:14px;color:rgba(255,255,255,0.85);margin-bottom:9px;">${cv.jobTitle}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:11px;">${ct(cv,'rgba(255,255,255,0.9)')}</div></div>
+            <div style="text-align:right;flex-shrink:0;padding-left:20px;">
+              <div style="font-size:9px;letter-spacing:2px;font-weight:700;color:rgba(255,255,255,0.65);text-transform:uppercase;margin-bottom:5px;">${cv.industry}</div>
+              <div style="font-size:34px;font-weight:900;color:#fff;line-height:1;">${cv.experience}</div>
+              <div style="font-size:9px;color:rgba(255,255,255,0.65);">Năm KN</div>
+            </div>
+          </div>
+        </div>
+        <div style="height:5px;background:linear-gradient(90deg,#6ee7b7,#34d399,#10b981);"></div>
+        <div style="padding:28px 52px;background:#f0fdf4;">
+          ${cv.summary?`<div style="font-size:13px;line-height:1.8;color:#065f46;font-style:italic;padding:13px 17px;border-left:4px solid ${c};background:#d1fae5;border-radius:0 8px 8px 0;margin-bottom:24px;">"${cv.summary}"</div>`:''}
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;">
+            <div>${sb('Kinh nghiệm',ex,c,'#e7faf4')}${sb('Học vấn',ed,c,'#e7faf4')}</div>
+            <div>${sk?sb('Kỹ năng',`<div style="display:flex;flex-wrap:wrap;gap:5px;">${sk}</div>`,c,'#e7faf4'):''}${la?sb('Ngôn ngữ',`<div style="display:flex;flex-wrap:wrap;gap:5px;">${la}</div>`,c,'#e7faf4'):''}${ce?sb('Chứng chỉ',`<ul style="padding:0;margin:0;">${ce}</ul>`,c,'#e7faf4'):''}${sb('Cấp độ',`<span style="padding:4px 13px;background:#d1fae5;color:${c};border-radius:999px;font-size:11px;font-weight:700;border:1px solid #6ee7b7;display:inline-block;">${cv.level}</span>`,c,'#e7faf4')}</div>
+          </div>
+        </div></div>`;
+    }
+  },
+  corporate: {
+    name: 'Corporate',
+    render: (cv) => {
+      const c='#1e3a5f', ca='#3b82f6', cL='#dbeafe';
+      const {sk,ex,ed,la,ce} = parts(cv,ca,cL);
+      return `<div style="font-family:Arial,sans-serif;background:#fff;color:#1a1918;min-height:1100px;box-sizing:border-box;">
+        <div style="background:${c};padding:34px 52px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+            <div><div style="font-size:32px;font-weight:900;color:#fff;margin-bottom:4px;">${cv.name}</div>
+            <div style="font-size:13px;color:#93c5fd;letter-spacing:0.3px;margin-bottom:12px;">${cv.jobTitle} | ${cv.industry}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:12px;">${ct(cv,'#93c5fd')}</div></div>
+            <div style="flex-shrink:0;padding-left:20px;">
+              <div style="padding:7px 18px;background:${ca};border-radius:5px;text-align:center;">
+                <div style="font-size:24px;font-weight:900;color:#fff;line-height:1;">${cv.experience}</div>
+                <div style="font-size:8px;color:rgba(255,255,255,0.75);letter-spacing:1px;text-transform:uppercase;">Năm KN</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="height:4px;background:linear-gradient(90deg,${ca},#60a5fa,${ca});"></div>
+        <div style="padding:28px 52px;">
+          ${cv.summary?`<div style="font-size:13px;line-height:1.7;color:#374151;padding:13px 17px;background:#f0f7ff;border-top:3px solid ${ca};border-radius:0 0 5px 5px;margin-bottom:26px;">${cv.summary}</div>`:''}
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;">
+            <div>${sb('Kinh nghiệm',ex,ca)}${sb('Học vấn',ed,ca)}</div>
+            <div>${sk?sb('Kỹ năng',`<div style="display:flex;flex-wrap:wrap;gap:5px;">${sk}</div>`,ca):''}${la?sb('Ngôn ngữ',`<div style="display:flex;flex-wrap:wrap;gap:5px;">${la}</div>`,ca):''}${ce?sb('Chứng chỉ',`<ul style="padding:0;margin:0;">${ce}</ul>`,ca):''}${sb('Cấp độ',`<span style="padding:4px 13px;background:${cL};color:${c};border-radius:3px;font-size:11px;font-weight:700;border:1px solid #bfdbfe;display:inline-block;">${cv.level}</span>`,ca)}</div>
+          </div>
+        </div></div>`;
+    }
+  }
+};
+
+let activeCVTheme = 'classic';
+
+// ===== HELPER RENDERERS =====
+function hexA(hex,a){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return `rgba(${r},${g},${b},${a})`;}
+function adjC(hex,amt){let r=parseInt(hex.slice(1,3),16)+amt,g=parseInt(hex.slice(3,5),16)+amt,b=parseInt(hex.slice(5,7),16)+amt;r=Math.min(255,Math.max(0,r));g=Math.min(255,Math.max(0,g));b=Math.min(255,Math.max(0,b));return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;}
+function ct(cv,col='#555'){return[cv.email?`<span style="font-size:11px;color:${col};">✉ ${cv.email}</span>`:'',cv.phone?`<span style="font-size:11px;color:${col};">📱 ${cv.phone}</span>`:'',cv.location?`<span style="font-size:11px;color:${col};">📍 ${cv.location}</span>`:'',cv.linkedin?`<span style="font-size:11px;color:${col};">🔗 ${cv.linkedin}</span>`:''].filter(Boolean).join('');}
+function ctD(cv,g){return[cv.email?`<span style="font-size:11px;color:#8888aa;">✉ ${cv.email}</span>`:'',cv.phone?`<span style="font-size:11px;color:#8888aa;">📱 ${cv.phone}</span>`:'',cv.location?`<span style="font-size:11px;color:#8888aa;">📍 ${cv.location}</span>`:'',cv.linkedin?`<span style="font-size:11px;color:${g};">🔗 ${cv.linkedin}</span>`:''].filter(Boolean).join('');}
+function sb(t,c,col,bg=''){return `<div style="margin-bottom:22px;"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${col};padding-bottom:5px;border-bottom:2px solid ${col};margin-bottom:10px;">${t}</div>${c}</div>`;}
+function sbD(t,c,g){return `<div style="margin-bottom:22px;"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${g};padding-bottom:5px;border-bottom:1px solid rgba(201,169,110,0.25);margin-bottom:10px;">${t}</div>${c}</div>`;}
+function sbMin(t,c){return `<div style="margin-bottom:22px;"><div style="font-size:8px;font-weight:700;letter-spacing:3px;color:#9ca3af;border-bottom:1px solid #e5e7eb;padding-bottom:5px;margin-bottom:10px;font-family:Arial,sans-serif;">${t}</div>${c}</div>`;}
+
+function parts(cv,color,cLight,mono=false,dark=false){
+  const tc=dark?'#f0f0f5':'#1a1918', sc=dark?'#8888aa':'#6b7280', dc=dark?'#aaaacc':'#4b5563';
+  const sk=cv.skills.map(s=>`<div style="padding:4px 11px;border-radius:999px;font-size:11px;font-weight:600;background:${cLight};color:${mono?'#374151':color};display:inline-block;">${s}</div>`).join('');
+  const ex=cv.lastCompany?`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px;flex-wrap:wrap;gap:3px;"><div style="font-weight:700;font-size:13px;color:${tc};">${cv.lastPosition||cv.jobTitle}</div><div style="font-size:11px;color:${sc};">${cv.lastFrom||''}${cv.lastFrom&&cv.lastTo?' – ':''}${cv.lastTo||''}</div></div><div style="font-size:12px;color:${sc};margin-bottom:5px;font-weight:600;">📍 ${cv.lastCompany}</div>${cv.lastDesc?`<div style="font-size:12px;line-height:1.65;color:${dc};">${cv.lastDesc}</div>`:''}</div>`:`<p style="color:${sc};font-size:11px;">Chưa có thông tin kinh nghiệm</p>`;
+  const ed=cv.school?`<div><div style="font-weight:700;color:${tc};font-size:13px;">${cv.degree||'Bằng đại học'}</div><div style="color:${sc};font-size:12px;">${cv.school}</div>${cv.gradYear?`<div style="font-size:11px;color:${dark?'#555570':'#9ca3af'};">Tốt nghiệp: ${cv.gradYear}</div>`:''}</div>`:`<p style="color:${sc};font-size:11px;">Chưa có thông tin học vấn</p>`;
+  const la=cv.languages?.length?cv.languages.map(l=>`<div style="padding:4px 11px;border-radius:999px;font-size:11px;font-weight:600;background:${cLight};color:${mono?'#374151':color};display:inline-block;">${l}</div>`).join(''):'';
+  const ce=cv.certs?.length?cv.certs.map(cert=>`<li style="font-size:12px;color:${dc};margin-bottom:3px;list-style:none;padding:2px 0;">✓ ${cert}</li>`).join(''):'';
+  return {sk,ex,ed,la,ce};
+}
+
+function buildCVDoc(cv) {
+  return CV_THEMES[activeCVTheme].render(cv);
+}
+
+function selectCVTheme(el, themeId) {
+  document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  activeCVTheme = themeId;
+  const label = document.getElementById('activeThemeLabel');
+  if(label) label.textContent = CV_THEMES[themeId].name;
+  if(window._previewCV) {
+    document.getElementById('cvDocContainer').innerHTML = buildCVDoc(window._previewCV);
+  }
+}
+
+// ===== PREVIEW =====
+function openPreview(cv) {
+  if(!cv) return;
+  window._previewCV = cv;
+  activeCVTheme = 'classic';
+  document.querySelectorAll('.theme-card').forEach((c,i) => c.classList.toggle('active', i===0));
+  const label = document.getElementById('activeThemeLabel');
+  if(label) label.textContent = 'Classic Blue';
+  document.getElementById('cvDocContainer').innerHTML = buildCVDoc(cv);
+  document.getElementById('previewOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePreview() {
+  document.getElementById('previewOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function printCV() {
+  const btn = document.getElementById('exportPdfBtn');
+  const btn2 = document.getElementById('exportPdfBtnMobile');
+  const orig = btn ? btn.innerHTML : '';
+  const orig2 = btn2 ? btn2.innerHTML : '';
+  if(btn) { btn.innerHTML = '⏳ Đang xuất...'; btn.disabled = true; }
+  if(btn2) { btn2.innerHTML = '⏳...'; btn2.disabled = true; }
+
+  const source = document.getElementById('cvDocContainer');
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = 'font-family:Arial,sans-serif;width:794px;margin:0;padding:0;';
+  wrapper.innerHTML = source.innerHTML;
+
+  const opt = {
+    margin: 0,
+    filename: `CVAssist_${(window._previewCV?.name||'CV').replace(/\s+/g,'_')}_${CV_THEMES[activeCVTheme].name.replace(/\s+/g,'_')}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, letterRendering: true, backgroundColor: '#ffffff', logging: false, windowWidth: 794 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  html2pdf().set(opt).from(wrapper).save().then(() => {
+    if(btn) { btn.innerHTML = orig; btn.disabled = false; }
+    if(btn2) { btn2.innerHTML = orig2; btn2.disabled = false; }
+  }).catch(err => {
+    console.error('PDF error:', err);
+    if(btn) { btn.innerHTML = orig; btn.disabled = false; }
+    if(btn2) { btn2.innerHTML = orig2; btn2.disabled = false; }
+    alert('Lỗi xuất PDF. Vui lòng thử lại.');
+  });
+}
+
+// ===== CLOSE ON OVERLAY CLICK =====
+document.getElementById('wizardOverlay').addEventListener('click', function(e) {
+  if(e.target === this) closeWizard();
+});
+document.getElementById('previewOverlay').addEventListener('click', function(e) {
+  if(e.target === this) closePreview();
+});
+
+// ===== INIT =====
+renderCVGrid();
+</script>
 </body>
 </html>

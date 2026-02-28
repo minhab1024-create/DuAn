@@ -436,7 +436,7 @@
   .btn-outlined:hover { background: var(--md-sys-color-primary-container); }
 
   /* MAIN CONTENT */
-  .main-content { max-width: 900px; margin: 0 auto; padding: 40px 20px 80px; }
+  .main-content { max-width: 900px; margin: 0 auto; padding: 40px 20px 120px; }
 
   /* SECTION CARD */
   .section-card {
@@ -646,12 +646,11 @@
   /* ACTION BAR */
   .action-bar {
     background: var(--md-sys-color-surface-container);
-    border: 1px solid var(--md-sys-color-outline-variant);
-    border-radius: var(--shape-corner-extra-large);
-    padding: 24px 32px;
-    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
-    box-shadow: var(--elevation-2); margin-bottom: 32px;
-    position: sticky; bottom: 20px; z-index: 50;
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+    padding: 14px 24px;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.12);
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 90;
     backdrop-filter: blur(20px);
   }
   .action-bar-info { font-size: 14px; color: var(--md-sys-color-on-surface-variant); }
@@ -767,9 +766,12 @@
   /* Responsive */
   @media(max-width: 640px) {
     .hero { padding: 60px 20px 40px; }
-    .action-bar { padding: 16px 20px; }
+    .action-bar { padding: 10px 16px; gap: 8px; }
+    .action-bar-info { display: none; }
+    .action-bar-btns { flex: 1; justify-content: flex-end; }
     .section-card { padding: 20px; }
     .theme-grid { grid-template-columns: repeat(3, 1fr); }
+    .main-content { padding-bottom: 90px; }
   }
 </style>
 </head>
@@ -1279,7 +1281,7 @@
       </div>
     </div>
   </div>
-  <div class="action-bar">
+  <div class="action-bar" style="display:none">
     <div class="action-bar-info">
       <strong>Sẵn sàng xuất CV?</strong><br>
       Xem trước trước khi tải về
@@ -1521,6 +1523,9 @@ function showPage(pageId) {
     if (el) el.style.display = p === pageId ? '' : 'none';
     if (nav) nav.classList.toggle('active', p === pageId);
   });
+  // Show action bar only on create page
+  const bar = document.querySelector('.action-bar');
+  if (bar) bar.style.display = pageId === 'create' ? '' : 'none';
   window.scrollTo({ top: 0, behavior: 'smooth' });
   if (pageId === 'saved') renderSavedCVs();
   updateSavedBadge();

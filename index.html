@@ -620,6 +620,18 @@
   .brightness-btn:hover { border-color: var(--md-sys-color-primary); color: var(--md-sys-color-primary); background: var(--md-sys-color-primary-container); }
   .brightness-btn.active { border-color: var(--md-sys-color-primary); color: var(--md-sys-color-primary); background: var(--md-sys-color-primary-container); font-weight: 700; }
 
+  /* BG SIZE BUTTONS */
+  .bg-size-btn {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 12px 8px; border-radius: var(--shape-corner-medium);
+    border: 1.5px solid var(--md-sys-color-outline-variant);
+    background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface-variant);
+    cursor: pointer; transition: all 0.2s; font-family: var(--md-ref-typeface-plain);
+    text-align: center; min-height: 80px;
+  }
+  .bg-size-btn:hover { border-color: var(--md-sys-color-primary); color: var(--md-sys-color-primary); background: var(--md-sys-color-primary-container); }
+  .bg-size-btn.active { border-color: var(--md-sys-color-primary); color: var(--md-sys-color-primary); background: var(--md-sys-color-primary-container); font-weight: 700; box-shadow: 0 0 0 2px var(--md-sys-color-primary); }
+
   /* COLOR SWATCHES */
   .bg-color-swatch {
     width: 32px; height: 32px; border-radius: var(--shape-corner-small);
@@ -1119,27 +1131,57 @@
 
     <div id="bg-controls" style="display:none;margin-top:16px;">
 
-      <!-- Row 1: Opacity + Size -->
-      <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;margin-bottom:16px;">
-        <div style="flex:1;min-width:180px;">
-          <label class="field-label" style="margin-bottom:8px;display:block;">Độ mờ ảnh nền</label>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <input type="range" id="bg-opacity" min="5" max="70" value="15" oninput="updateBgPreview()" style="flex:1;">
-            <span id="bg-opacity-val" style="font-size:13px;font-weight:700;color:var(--md-sys-color-primary);min-width:36px;text-align:right;">15%</span>
-          </div>
-        </div>
-        <div style="flex:1;min-width:180px;">
-          <label class="field-label" style="margin-bottom:8px;display:block;">Kiểu hiển thị</label>
-          <select class="text-field" id="bg-size" onchange="updateBgPreview()" style="font-size:13px;">
-            <option value="cover">Phủ toàn bộ (Cover)</option>
-            <option value="contain">Vừa khung (Contain)</option>
-            <option value="repeat">Lặp lại (Repeat)</option>
-            <option value="center">Chỉ giữa trang</option>
-          </select>
+      <!-- Row 1: Opacity -->
+      <div style="margin-bottom:16px;">
+        <label class="field-label" style="margin-bottom:8px;display:block;">Độ mờ ảnh nền</label>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="material-icons-round" style="font-size:18px;color:var(--md-sys-color-outline);">opacity</span>
+          <input type="range" id="bg-opacity" min="5" max="70" value="15" oninput="updateBgPreview()" style="flex:1;">
+          <span id="bg-opacity-val" style="font-size:13px;font-weight:700;color:var(--md-sys-color-primary);min-width:36px;text-align:right;">15%</span>
         </div>
       </div>
 
-      <!-- Row 2: Image Brightness (Sáng/Tối) -->
+      <!-- Row 2: Kiểu hiển thị — Visual buttons -->
+      <div style="margin-bottom:16px;">
+        <label class="field-label" style="margin-bottom:10px;display:block;">Kiểu hiển thị ảnh nền</label>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;" id="bg-size-btns">
+          <button class="bg-size-btn active" data-size="cover" onclick="selectBgSize('cover',this)">
+            <span class="material-icons-round" style="font-size:20px;display:block;margin-bottom:4px;">crop_free</span>
+            <span style="font-size:12px;font-weight:600;">Phủ toàn bộ</span>
+            <span style="font-size:10px;opacity:0.7;display:block;">Cover — cắt viền nếu cần</span>
+          </button>
+          <button class="bg-size-btn" data-size="stretch" onclick="selectBgSize('stretch',this)">
+            <span class="material-icons-round" style="font-size:20px;display:block;margin-bottom:4px;">aspect_ratio</span>
+            <span style="font-size:12px;font-weight:600;">Kéo giãn full</span>
+            <span style="font-size:10px;opacity:0.7;display:block;">Stretch — lấp đầy 100%</span>
+          </button>
+          <button class="bg-size-btn" data-size="contain" onclick="selectBgSize('contain',this)">
+            <span class="material-icons-round" style="font-size:20px;display:block;margin-bottom:4px;">fit_screen</span>
+            <span style="font-size:12px;font-weight:600;">Vừa khung</span>
+            <span style="font-size:10px;opacity:0.7;display:block;">Contain — giữ tỉ lệ</span>
+          </button>
+          <button class="bg-size-btn" data-size="repeat" onclick="selectBgSize('repeat',this)">
+            <span class="material-icons-round" style="font-size:20px;display:block;margin-bottom:4px;">grid_on</span>
+            <span style="font-size:12px;font-weight:600;">Lặp lại</span>
+            <span style="font-size:10px;opacity:0.7;display:block;">Repeat — tile pattern</span>
+          </button>
+          <button class="bg-size-btn" data-size="center" onclick="selectBgSize('center',this)">
+            <span class="material-icons-round" style="font-size:20px;display:block;margin-bottom:4px;">filter_center_focus</span>
+            <span style="font-size:12px;font-weight:600;">Giữa trang</span>
+            <span style="font-size:10px;opacity:0.7;display:block;">Chỉ hiện ở trung tâm</span>
+          </button>
+        </div>
+        <!-- Hidden select for value passing -->
+        <select id="bg-size" style="display:none;">
+          <option value="cover">cover</option>
+          <option value="stretch">stretch</option>
+          <option value="contain">contain</option>
+          <option value="repeat">repeat</option>
+          <option value="center">center</option>
+        </select>
+      </div>
+
+      <!-- Row 3: Image Brightness (Sáng/Tối) -->
       <div style="margin-bottom:16px;">
         <label class="field-label" style="margin-bottom:10px;display:block;">Độ sáng / tối ảnh nền</label>
         <div style="display:flex;gap:8px;flex-wrap:wrap;" id="brightness-btns">
@@ -1560,6 +1602,13 @@ function previewBgImage(input) {
   reader.readAsDataURL(file);
 }
 
+function selectBgSize(size, btn) {
+  document.getElementById('bg-size').value = size;
+  document.querySelectorAll('.bg-size-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  updateBgPreview();
+}
+
 function updateBgPreview() {
   if (!bgImageDataUrl) return;
   const opacity = document.getElementById('bg-opacity').value;
@@ -1567,20 +1616,34 @@ function updateBgPreview() {
   document.getElementById('bg-opacity-val').textContent = opacity + '%';
 
   const overlay = document.getElementById('bg-mini-overlay');
-  const bgSize = size === 'cover' ? 'cover' : size === 'contain' ? 'contain' : size === 'repeat' ? 'auto' : '50% 50%';
-  const bgRepeat = size === 'repeat' ? 'repeat' : 'no-repeat';
+
+  // Map size values → CSS background properties
+  let bgSizeCSS, bgRepeatCSS, bgPositionCSS;
+  switch(size) {
+    case 'stretch':
+      bgSizeCSS = '100% 100%'; bgRepeatCSS = 'no-repeat'; bgPositionCSS = 'center'; break;
+    case 'cover':
+      bgSizeCSS = 'cover'; bgRepeatCSS = 'no-repeat'; bgPositionCSS = 'center'; break;
+    case 'contain':
+      bgSizeCSS = 'contain'; bgRepeatCSS = 'no-repeat'; bgPositionCSS = 'center'; break;
+    case 'repeat':
+      bgSizeCSS = 'auto'; bgRepeatCSS = 'repeat'; bgPositionCSS = 'center'; break;
+    case 'center':
+      bgSizeCSS = '60% auto'; bgRepeatCSS = 'no-repeat'; bgPositionCSS = 'center center'; break;
+    default:
+      bgSizeCSS = 'cover'; bgRepeatCSS = 'no-repeat'; bgPositionCSS = 'center';
+  }
 
   overlay.style.cssText = `
     position:absolute;inset:0;
     background-image:url(${bgImageDataUrl});
-    background-size:${bgSize};
-    background-repeat:${bgRepeat};
-    background-position:center;
+    background-size:${bgSizeCSS};
+    background-repeat:${bgRepeatCSS};
+    background-position:${bgPositionCSS};
     opacity:${opacity / 100};
     filter:brightness(${bgBrightness});
   `;
 
-  // also update mini preview bg color
   const preview = document.getElementById('bg-mini-preview');
   if (preview) preview.style.background = pdfBgColor;
 }
@@ -1646,6 +1709,8 @@ function removeBgImage() {
   document.getElementById('bg-brightness').value = 100;
   document.getElementById('bg-brightness-val').textContent = '100%';
   document.getElementById('bg-mini-overlay').style.cssText = '';
+  document.getElementById('bg-size').value = 'cover';
+  document.querySelectorAll('.bg-size-btn').forEach((b,i) => b.classList.toggle('active', i===0));
   bgBrightness = 1;
   document.querySelectorAll('.brightness-btn').forEach((b,i) => b.classList.toggle('active', i===0));
   showSnackbar('🗑️ Đã xóa ảnh nền');
@@ -2058,21 +2123,43 @@ function renderCVHTML(data, theme) {
 
   const formatDate = d => d ? new Date(d).toLocaleDateString('vi-VN') : '';
 
-  // Background image styles
-  const bgImgStyle = data.bgImage ? (() => {
-    const sizeMap = { cover: 'cover', contain: 'contain', repeat: 'auto', center: '50% auto' };
-    const repeatMap = { cover: 'no-repeat', contain: 'no-repeat', repeat: 'repeat', center: 'no-repeat' };
-    const posMap = { cover: 'center', contain: 'center', repeat: 'center', center: 'center center' };
-    const sz = data.bgSize || 'cover';
-    return `background-image:url(${data.bgImage});background-size:${sizeMap[sz]};background-repeat:${repeatMap[sz]};background-position:${posMap[sz]};`;
-  })() : '';
-  const bgOpacity = data.bgOpacity || 0.15;
-  const brightFilter = (data.bgBrightness && data.bgBrightness !== 1) ? `filter:brightness(${data.bgBrightness});` : '';
   const bodyBg = data.pdfBgColor || th.body;
+
+  // Build background image overlay style based on mode
+  let bgOverlayStyle = '';
+  if (data.bgImage) {
+    let bgSizeCSS, bgRepeatCSS, bgPositionCSS;
+    const sz = data.bgSize || 'cover';
+    switch(sz) {
+      case 'stretch':
+        bgSizeCSS = '100% 100%'; bgRepeatCSS = 'no-repeat'; bgPositionCSS = 'center'; break;
+      case 'cover':
+        bgSizeCSS = 'cover'; bgRepeatCSS = 'no-repeat'; bgPositionCSS = 'center'; break;
+      case 'contain':
+        bgSizeCSS = 'contain'; bgRepeatCSS = 'no-repeat'; bgPositionCSS = 'center'; break;
+      case 'repeat':
+        bgSizeCSS = 'auto'; bgRepeatCSS = 'repeat'; bgPositionCSS = 'center'; break;
+      case 'center':
+        bgSizeCSS = '60% auto'; bgRepeatCSS = 'no-repeat'; bgPositionCSS = 'center center'; break;
+      default:
+        bgSizeCSS = 'cover'; bgRepeatCSS = 'no-repeat'; bgPositionCSS = 'center';
+    }
+    const brightFilter = (data.bgBrightness && data.bgBrightness !== 1) ? `filter:brightness(${data.bgBrightness});` : '';
+    const op = data.bgOpacity || 0.15;
+    bgOverlayStyle = `position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;
+      background-image:url(${data.bgImage});
+      background-size:${bgSizeCSS};
+      background-repeat:${bgRepeatCSS};
+      background-position:${bgPositionCSS};
+      opacity:${op};
+      pointer-events:none;
+      z-index:0;
+      ${brightFilter}`;
+  }
 
   return `
   <div style="font-family:'Noto Sans',Arial,sans-serif; background:${bodyBg}; max-width:794px; margin:0 auto; position:relative; overflow:hidden;">
-    ${data.bgImage ? `<div style="position:absolute;inset:0;${bgImgStyle}opacity:${bgOpacity};pointer-events:none;z-index:0;${brightFilter}"></div>` : ''}
+    ${data.bgImage ? `<div style="${bgOverlayStyle}"></div>` : ''}
     <div style="position:relative;z-index:1;">
     <div style="background:${th.headerBg}; padding:32px 36px; display:flex; align-items:center; gap:24px;">
       ${data.photo ? `<img src="${data.photo}" style="width:90px;height:110px;object-fit:cover;border-radius:8px;border:3px solid rgba(255,255,255,0.3);">` : ''}
@@ -2087,7 +2174,7 @@ function renderCVHTML(data, theme) {
         ${links ? `<div style="display:flex;flex-wrap:wrap;gap:16px;">${links}</div>` : ''}
       </div>
     </div>
-    <div style="padding:28px 36px; font-size:13px; line-height:1.6; color:#333;">
+    <div style="padding:28px 36px; font-size:13px; line-height:1.6; color:#333; background:transparent;">
       ${data.careerObj ? sec('🎯','Mục tiêu nghề nghiệp', `<p style="color:#444;font-size:13px;line-height:1.6;">${data.careerObj}</p>`) : ''}
       ${eduHTML ? sec('🎓','Học Vấn', eduHTML) : ''}
       ${expHTML ? sec('💼','Kinh Nghiệm Làm Việc', expHTML) : ''}
@@ -2099,7 +2186,7 @@ function renderCVHTML(data, theme) {
     <div style="background:${th.sidebarBg};padding:12px 36px;text-align:center;font-size:11px;color:#888;border-top:1px solid ${th.lineColor};">
       Tạo bởi CVAssist • ${new Date().toLocaleDateString('vi-VN')}
     </div>
-    </div><!-- end z-index wrapper -->
+    </div>
   </div>`;
 }
 
@@ -2124,17 +2211,26 @@ async function downloadCV() {
   const data = collectData();
   if (!data.name) { showSnackbar('⚠️ Vui lòng nhập họ và tên trước!'); return; }
   showSnackbar('⏳ Đang tạo PDF...');
+
   const html = renderCVHTML(data, selectedTheme);
   const container = document.createElement('div');
-  container.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;background:white;z-index:-1;';
+  container.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;z-index:-1;';
+  // Dùng màu nền thật thay vì cứng 'white'
+  container.style.background = data.pdfBgColor || '#ffffff';
   container.innerHTML = html;
   document.body.appendChild(container);
-  await new Promise(r => setTimeout(r, 300));
+  await new Promise(r => setTimeout(r, 400));
+
   try {
-    const canvas = await html2canvas(container, { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#ffffff', width: 794 });
+    const canvas = await html2canvas(container, {
+      scale: 2, useCORS: true, allowTaint: true,
+      backgroundColor: data.pdfBgColor || '#ffffff',
+      width: 794,
+      logging: false,
+    });
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+    const imgData = canvas.toDataURL('image/jpeg', 0.97);
     const imgWidth = 210;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
     let heightLeft = imgHeight, position = 0;
@@ -2146,7 +2242,36 @@ async function downloadCV() {
       heightLeft -= 297;
     }
     pdf.save(`CV_${(data.name || 'MyCV').replace(/\s+/g, '_')}.pdf`);
-    showSnackbar('✅ Tải CV thành công!');
+    showSnackbar('✅ Tải CV thành công! Đang lưu...');
+
+    // ── AUTO-SAVE: chỉ lưu thông tin CV, KHÔNG lưu bgImage/bgColor ──
+    const saved = getSavedCVs();
+    const infoOnly = {
+      photo: data.photo,
+      name: data.name, dob: data.dob, phone: data.phone,
+      email: data.email, address: data.address,
+      linkedin: data.linkedin, github: data.github, portfolio: data.portfolio,
+      careerObj: data.careerObj,
+      educations: data.educations,
+      experiences: data.experiences,
+      hardSkills: data.hardSkills,
+      softSkills: data.softSkills,
+      languages: data.languages,
+      certs: data.certs,
+      activities: data.activities,
+      awards: data.awards,
+      theme: data.theme,
+      // bgImage, bgOpacity, bgSize, bgBrightness, pdfBgColor ← KHÔNG lưu
+    };
+    const label = `CV_${data.name.replace(/\s+/g,'_')}_${new Date().toLocaleDateString('vi-VN').replace(/\//g,'-')}`;
+    // Tránh lưu trùng trong cùng 1 phút
+    const recent = saved.find(c => c.label === label);
+    if (!recent) {
+      saved.push({ id: Date.now(), label, data: infoOnly, savedAt: new Date().toISOString() });
+      localStorage.setItem('cvassist_saved', JSON.stringify(saved));
+      updateSavedBadge();
+      setTimeout(() => showSnackbar('💾 Đã tự động lưu CV vào "CV đã tạo"'), 1500);
+    }
   } catch(e) {
     showSnackbar('❌ Lỗi tạo PDF. Thử lại!'); console.error(e);
   }

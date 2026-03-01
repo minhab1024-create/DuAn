@@ -438,6 +438,86 @@
   /* MAIN CONTENT */
   .main-content { max-width: 900px; margin: 0 auto; padding: 40px 20px 120px; }
 
+  /* ========== TWO-COLUMN LAYOUT FOR CREATE PAGE ========== */
+  .create-layout {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    grid-template-rows: auto 1fr;
+    gap: 0 24px;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 24px 24px 120px;
+    align-items: start;
+  }
+  .create-left {
+    grid-column: 1;
+    min-width: 0;
+  }
+  .create-right {
+    grid-column: 2;
+    position: sticky;
+    top: 80px; /* below top app bar */
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--md-sys-color-outline-variant) transparent;
+  }
+  .create-right::-webkit-scrollbar { width: 4px; }
+  .create-right::-webkit-scrollbar-thumb { background: var(--md-sys-color-outline-variant); border-radius: 4px; }
+  .create-right::-webkit-scrollbar-track { background: transparent; }
+
+  /* Right panel header */
+  .right-panel-header {
+    background: linear-gradient(135deg, var(--md-sys-color-primary-container), var(--md-sys-color-secondary-container));
+    border-radius: var(--shape-corner-large) var(--shape-corner-large) 0 0;
+    padding: 16px 20px;
+    display: flex; align-items: center; gap: 12px;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  }
+  .right-panel-title {
+    font-family: var(--md-ref-typeface-brand);
+    font-size: 16px; font-weight: 700;
+    color: var(--md-sys-color-on-primary-container);
+  }
+  .right-panel-sub {
+    font-size: 12px; color: var(--md-sys-color-on-surface-variant); margin-top: 1px;
+  }
+  .right-panel-body {
+    background: var(--md-sys-color-surface-container-low);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-top: none;
+    border-radius: 0 0 var(--shape-corner-large) var(--shape-corner-large);
+    padding: 0;
+    overflow: hidden;
+  }
+  .right-panel-section {
+    padding: 20px;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  }
+  .right-panel-section:last-child { border-bottom: none; }
+  .right-panel-section-title {
+    font-size: 13px; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase;
+    color: var(--md-sys-color-primary); margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* On mobile: stack vertically */
+  @media(max-width: 960px) {
+    .create-layout {
+      grid-template-columns: 1fr;
+      padding: 16px 16px 120px;
+      gap: 0;
+    }
+    .create-right {
+      position: static;
+      max-height: none;
+      overflow: visible;
+      grid-column: 1;
+      margin-top: 20px;
+    }
+  }
+
   /* SECTION CARD */
   .section-card {
     background: var(--md-sys-color-surface-container);
@@ -652,6 +732,11 @@
     box-shadow: 0 -4px 20px rgba(0,0,0,0.12);
     position: fixed; bottom: 0; left: 0; right: 0; z-index: 90;
     backdrop-filter: blur(20px);
+  }
+  /* On desktop: hide fixed bar since buttons are in right panel */
+  @media(min-width: 961px) {
+    .action-bar { display: none !important; }
+    .create-layout { padding-bottom: 40px; }
   }
   .action-bar-info { font-size: 14px; color: var(--md-sys-color-on-surface-variant); }
   .action-bar-info strong { color: var(--md-sys-color-on-surface); font-weight: 600; }
@@ -906,11 +991,11 @@
 <!-- ============ PAGE: CREATE ============ -->
 <div id="page-create" style="display:none">
 
-<!-- MAIN FORM -->
-<main class="main-content" id="cv-form-section">
+<div class="create-layout">
 
-  <!-- PROGRESS -->
-  <div class="progress-bar-wrap">
+<!-- PROGRESS BAR — full width above both columns -->
+<div style="grid-column:1/-1;padding:0 0 4px;">
+  <div class="progress-bar-wrap" style="margin-bottom:0;">
     <div class="progress-header">
       <span class="progress-label">Mức độ hoàn thành CV</span>
       <span class="progress-value" id="progress-pct">0%</span>
@@ -918,6 +1003,11 @@
     <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
     <div class="progress-steps" id="progress-steps"></div>
   </div>
+</div>
+
+<!-- ===== LEFT COLUMN: FORM ===== -->
+<div class="create-left">
+<main id="cv-form-section">
 
   <!-- 1. PERSONAL INFO -->
   <div class="section-card" style="--i:0">
@@ -1097,206 +1187,181 @@
     <button class="add-btn" style="margin-top:12px" onclick="addAward()"><span class="material-icons-round">add</span> Thêm giải thưởng</button>
   </div>
 
-  <!-- THEME SELECTOR -->
-  <div class="section-card" style="--i:8">
-    <div class="section-header">
-      <div class="section-icon"><span class="material-icons-round">palette</span></div>
-      <div>
-        <div class="section-title">Chọn theme PDF</div>
-        <div class="section-subtitle">Chọn giao diện cho file CV của bạn</div>
-      </div>
+</main>
+</div><!-- end create-left -->
+
+<!-- ===== RIGHT COLUMN: PDF APPEARANCE ===== -->
+<div class="create-right">
+  <div class="right-panel-header">
+    <span class="material-icons-round" style="font-size:22px;color:var(--md-sys-color-primary)">auto_awesome</span>
+    <div>
+      <div class="right-panel-title">Giao diện PDF</div>
+      <div class="right-panel-sub">Chọn theme, nền, màu sắc cho CV</div>
     </div>
-    <div class="theme-grid" id="theme-grid"></div>
+  </div>
+  <div class="right-panel-body">
 
-    <div class="divider" style="margin:24px 0 20px"></div>
-
-    <!-- PDF BACKGROUND IMAGE -->
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-      <div class="section-icon" style="background:var(--md-sys-color-tertiary-container);">
-        <span class="material-icons-round" style="color:var(--md-sys-color-tertiary)">wallpaper</span>
+    <!-- SECTION 1: THEME -->
+    <div class="right-panel-section">
+      <div class="right-panel-section-title">
+        <span class="material-icons-round" style="font-size:16px;">palette</span>
+        Chọn theme CV
       </div>
-      <div>
-        <div class="section-title" style="font-size:16px;">Ảnh nền PDF</div>
-        <div class="section-subtitle">Thêm hình nền tùy chỉnh cho CV (không bắt buộc)</div>
-      </div>
-    </div>
-
-    <div class="bg-upload-area" id="bg-upload-area">
-      <input type="file" id="bg-image-input" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;" onchange="previewBgImage(this)">
-      <div id="bg-upload-placeholder">
-        <span class="material-icons-round" style="font-size:40px;color:var(--md-sys-color-outline);margin-bottom:8px;display:block;">add_photo_alternate</span>
-        <div style="font-size:14px;font-weight:500;color:var(--md-sys-color-on-surface);">Nhấn để chọn ảnh nền</div>
-        <div style="font-size:12px;color:var(--md-sys-color-on-surface-variant);margin-top:4px;">JPG, PNG — Khuyến nghị 794×1123px (A4)</div>
-      </div>
-      <img id="bg-image-preview" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:var(--shape-corner-medium);">
+      <div class="theme-grid" id="theme-grid" style="grid-template-columns:repeat(3,1fr);gap:8px;"></div>
     </div>
 
-    <div id="bg-controls" style="display:none;margin-top:16px;">
-
-      <!-- Row 1: Opacity -->
-      <div style="margin-bottom:16px;">
-        <label class="field-label" style="margin-bottom:8px;display:block;">Độ mờ ảnh nền</label>
-        <div style="display:flex;align-items:center;gap:10px;">
-          <span class="material-icons-round" style="font-size:18px;color:var(--md-sys-color-outline);">opacity</span>
-          <input type="range" id="bg-opacity" min="5" max="70" value="15" oninput="updateBgPreview()" style="flex:1;">
-          <span id="bg-opacity-val" style="font-size:13px;font-weight:700;color:var(--md-sys-color-primary);min-width:36px;text-align:right;">15%</span>
-        </div>
+    <!-- SECTION 2: BG IMAGE -->
+    <div class="right-panel-section">
+      <div class="right-panel-section-title">
+        <span class="material-icons-round" style="font-size:16px;">wallpaper</span>
+        Ảnh nền PDF
       </div>
 
-      <!-- Row 2: Kiểu hiển thị — Visual buttons -->
-      <div style="margin-bottom:16px;">
-        <label class="field-label" style="margin-bottom:10px;display:block;">Kiểu hiển thị ảnh nền</label>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;" id="bg-size-btns">
-          <button class="bg-size-btn active" data-size="cover" onclick="selectBgSize('cover',this)">
-            <span class="material-icons-round" style="font-size:20px;display:block;margin-bottom:4px;">crop_free</span>
-            <span style="font-size:12px;font-weight:600;">Phủ toàn bộ</span>
-            <span style="font-size:10px;opacity:0.7;display:block;">Cover — cắt viền nếu cần</span>
-          </button>
-          <button class="bg-size-btn" data-size="stretch" onclick="selectBgSize('stretch',this)">
-            <span class="material-icons-round" style="font-size:20px;display:block;margin-bottom:4px;">aspect_ratio</span>
-            <span style="font-size:12px;font-weight:600;">Kéo giãn full</span>
-            <span style="font-size:10px;opacity:0.7;display:block;">Stretch — lấp đầy 100%</span>
-          </button>
-          <button class="bg-size-btn" data-size="contain" onclick="selectBgSize('contain',this)">
-            <span class="material-icons-round" style="font-size:20px;display:block;margin-bottom:4px;">fit_screen</span>
-            <span style="font-size:12px;font-weight:600;">Vừa khung</span>
-            <span style="font-size:10px;opacity:0.7;display:block;">Contain — giữ tỉ lệ</span>
-          </button>
-          <button class="bg-size-btn" data-size="repeat" onclick="selectBgSize('repeat',this)">
-            <span class="material-icons-round" style="font-size:20px;display:block;margin-bottom:4px;">grid_on</span>
-            <span style="font-size:12px;font-weight:600;">Lặp lại</span>
-            <span style="font-size:10px;opacity:0.7;display:block;">Repeat — tile pattern</span>
-          </button>
-          <button class="bg-size-btn" data-size="center" onclick="selectBgSize('center',this)">
-            <span class="material-icons-round" style="font-size:20px;display:block;margin-bottom:4px;">filter_center_focus</span>
-            <span style="font-size:12px;font-weight:600;">Giữa trang</span>
-            <span style="font-size:10px;opacity:0.7;display:block;">Chỉ hiện ở trung tâm</span>
-          </button>
+      <div class="bg-upload-area" id="bg-upload-area" style="min-height:90px;">
+        <input type="file" id="bg-image-input" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;" onchange="previewBgImage(this)">
+        <div id="bg-upload-placeholder" style="display:flex;flex-direction:column;align-items:center;padding:16px 12px;">
+          <span class="material-icons-round" style="font-size:32px;color:var(--md-sys-color-outline);margin-bottom:6px;">add_photo_alternate</span>
+          <div style="font-size:13px;font-weight:500;color:var(--md-sys-color-on-surface);">Nhấn để chọn ảnh nền</div>
+          <div style="font-size:11px;color:var(--md-sys-color-on-surface-variant);margin-top:3px;text-align:center;">JPG, PNG — Khuyến nghị A4 (794×1123px)</div>
         </div>
-        <!-- Hidden select for value passing -->
-        <select id="bg-size" style="display:none;">
-          <option value="cover">cover</option>
-          <option value="stretch">stretch</option>
-          <option value="contain">contain</option>
-          <option value="repeat">repeat</option>
-          <option value="center">center</option>
-        </select>
+        <img id="bg-image-preview" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:var(--shape-corner-medium);">
       </div>
 
-      <!-- Row 3: Image Brightness (Sáng/Tối) -->
-      <div style="margin-bottom:16px;">
-        <label class="field-label" style="margin-bottom:10px;display:block;">Độ sáng / tối ảnh nền</label>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;" id="brightness-btns">
-          <button class="brightness-btn active" data-val="1" onclick="setBrightness(1,this)">
-            <span class="material-icons-round" style="font-size:16px;">wb_sunny</span> Gốc
-          </button>
-          <button class="brightness-btn" data-val="1.4" onclick="setBrightness(1.4,this)">
-            <span class="material-icons-round" style="font-size:16px;">brightness_high</span> Sáng hơn
-          </button>
-          <button class="brightness-btn" data-val="1.8" onclick="setBrightness(1.8,this)">
-            <span class="material-icons-round" style="font-size:16px;">flare</span> Rất sáng
-          </button>
-          <button class="brightness-btn" data-val="0.6" onclick="setBrightness(0.6,this)">
-            <span class="material-icons-round" style="font-size:16px;">brightness_low</span> Tối hơn
-          </button>
-          <button class="brightness-btn" data-val="0.3" onclick="setBrightness(0.3,this)">
-            <span class="material-icons-round" style="font-size:16px;">dark_mode</span> Rất tối
-          </button>
+      <div id="bg-controls" style="display:none;margin-top:14px;">
+        <!-- Opacity -->
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <label class="field-label" style="margin:0;">Độ mờ ảnh</label>
+            <span id="bg-opacity-val" style="font-size:12px;font-weight:700;color:var(--md-sys-color-primary);">15%</span>
+          </div>
+          <input type="range" id="bg-opacity" min="5" max="70" value="15" oninput="updateBgPreview()" style="width:100%;">
         </div>
-        <div style="display:flex;align-items:center;gap:10px;margin-top:10px;">
-          <span style="font-size:12px;color:var(--md-sys-color-on-surface-variant);">Tùy chỉnh:</span>
-          <input type="range" id="bg-brightness" min="10" max="200" value="100" oninput="updateBrightness(this.value)" style="flex:1;">
-          <span id="bg-brightness-val" style="font-size:13px;font-weight:700;color:var(--md-sys-color-primary);min-width:40px;">100%</span>
-        </div>
-      </div>
 
-      <!-- Mini Preview -->
-      <div style="margin-bottom:14px;">
-        <label class="field-label" style="margin-bottom:8px;display:block;">Xem trước ảnh nền</label>
-        <div id="bg-mini-preview" style="
-          width:100%;height:130px;border-radius:var(--shape-corner-medium);
-          border:1.5px solid var(--md-sys-color-outline-variant);
-          position:relative;overflow:hidden;background:#fff;
-          transition: background 0.2s;
-        ">
-          <div id="bg-mini-overlay" style="position:absolute;inset:0;"></div>
-          <div style="position:relative;z-index:1;padding:14px 16px;">
-            <div style="height:11px;background:rgba(0,0,0,0.18);border-radius:4px;width:55%;margin-bottom:8px;"></div>
-            <div style="height:5px;background:rgba(0,0,0,0.1);border-radius:3px;width:90%;margin-bottom:5px;"></div>
-            <div style="height:5px;background:rgba(0,0,0,0.1);border-radius:3px;width:78%;margin-bottom:5px;"></div>
-            <div style="height:5px;background:rgba(0,0,0,0.1);border-radius:3px;width:85%;"></div>
+        <!-- Bg Size buttons -->
+        <div style="margin-bottom:12px;">
+          <label class="field-label" style="display:block;margin-bottom:8px;">Kiểu hiển thị</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;" id="bg-size-btns">
+            <button class="bg-size-btn active" data-size="cover" onclick="selectBgSize('cover',this)" style="min-height:60px;padding:8px;">
+              <span class="material-icons-round" style="font-size:18px;display:block;margin-bottom:3px;">crop_free</span>
+              <span style="font-size:11px;font-weight:600;display:block;">Phủ toàn bộ</span>
+              <span style="font-size:10px;opacity:0.65;display:block;">Cover</span>
+            </button>
+            <button class="bg-size-btn" data-size="stretch" onclick="selectBgSize('stretch',this)" style="min-height:60px;padding:8px;">
+              <span class="material-icons-round" style="font-size:18px;display:block;margin-bottom:3px;">aspect_ratio</span>
+              <span style="font-size:11px;font-weight:600;display:block;">Kéo giãn full</span>
+              <span style="font-size:10px;opacity:0.65;display:block;">Stretch 100%</span>
+            </button>
+            <button class="bg-size-btn" data-size="contain" onclick="selectBgSize('contain',this)" style="min-height:60px;padding:8px;">
+              <span class="material-icons-round" style="font-size:18px;display:block;margin-bottom:3px;">fit_screen</span>
+              <span style="font-size:11px;font-weight:600;display:block;">Vừa khung</span>
+              <span style="font-size:10px;opacity:0.65;display:block;">Contain</span>
+            </button>
+            <button class="bg-size-btn" data-size="repeat" onclick="selectBgSize('repeat',this)" style="min-height:60px;padding:8px;">
+              <span class="material-icons-round" style="font-size:18px;display:block;margin-bottom:3px;">grid_on</span>
+              <span style="font-size:11px;font-weight:600;display:block;">Lặp lại</span>
+              <span style="font-size:10px;opacity:0.65;display:block;">Repeat tile</span>
+            </button>
+            <button class="bg-size-btn" data-size="center" onclick="selectBgSize('center',this)" style="min-height:60px;padding:8px;grid-column:1/-1;">
+              <span class="material-icons-round" style="font-size:18px;display:block;margin-bottom:3px;">filter_center_focus</span>
+              <span style="font-size:11px;font-weight:600;display:block;">Giữa trang</span>
+              <span style="font-size:10px;opacity:0.65;display:block;">Center only</span>
+            </button>
+          </div>
+          <select id="bg-size" style="display:none;">
+            <option value="cover">cover</option><option value="stretch">stretch</option>
+            <option value="contain">contain</option><option value="repeat">repeat</option>
+            <option value="center">center</option>
+          </select>
+        </div>
+
+        <!-- Brightness -->
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <label class="field-label" style="margin:0;">Độ sáng / tối</label>
+            <span id="bg-brightness-val" style="font-size:12px;font-weight:700;color:var(--md-sys-color-primary);">100%</span>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;" id="brightness-btns">
+            <button class="brightness-btn active" data-val="1" onclick="setBrightness(1,this)" style="font-size:11px;padding:5px 8px;">☀️ Gốc</button>
+            <button class="brightness-btn" data-val="1.5" onclick="setBrightness(1.5,this)" style="font-size:11px;padding:5px 8px;">🌤 Sáng</button>
+            <button class="brightness-btn" data-val="2" onclick="setBrightness(2,this)" style="font-size:11px;padding:5px 8px;">⬜ Rất sáng</button>
+            <button class="brightness-btn" data-val="0.6" onclick="setBrightness(0.6,this)" style="font-size:11px;padding:5px 8px;">🌒 Tối</button>
+            <button class="brightness-btn" data-val="0.25" onclick="setBrightness(0.25,this)" style="font-size:11px;padding:5px 8px;">🌑 Rất tối</button>
+          </div>
+          <input type="range" id="bg-brightness" min="10" max="200" value="100" oninput="updateBrightness(this.value)" style="width:100%;">
+        </div>
+
+        <!-- Mini preview -->
+        <div style="margin-bottom:12px;">
+          <label class="field-label" style="display:block;margin-bottom:6px;">Xem trước</label>
+          <div id="bg-mini-preview" style="
+            width:100%;height:110px;border-radius:var(--shape-corner-medium);
+            border:1.5px solid var(--md-sys-color-outline-variant);
+            position:relative;overflow:hidden;background:#fff;transition:background 0.2s;">
+            <div id="bg-mini-overlay" style="position:absolute;inset:0;"></div>
+            <div style="position:relative;z-index:1;padding:12px 14px;">
+              <div style="height:10px;background:rgba(0,0,0,0.18);border-radius:4px;width:50%;margin-bottom:7px;"></div>
+              <div style="height:5px;background:rgba(0,0,0,0.1);border-radius:3px;width:90%;margin-bottom:4px;"></div>
+              <div style="height:5px;background:rgba(0,0,0,0.1);border-radius:3px;width:75%;margin-bottom:4px;"></div>
+              <div style="height:5px;background:rgba(0,0,0,0.1);border-radius:3px;width:82%;"></div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <button class="add-btn" onclick="removeBgImage()" style="color:var(--md-sys-color-error);background:rgba(186,26,26,0.1);">
-        <span class="material-icons-round">delete_outline</span> Xóa ảnh nền
-      </button>
-    </div>
-
-    <!-- DIVIDER -->
-    <div class="divider" style="margin:24px 0 20px"></div>
-
-    <!-- PDF BODY BG COLOR — Always visible -->
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-      <div class="section-icon" style="background:linear-gradient(135deg,#E3F2FD,#F3E5F5);">
-        <span class="material-icons-round" style="color:#7B1FA2">format_color_fill</span>
-      </div>
-      <div>
-        <div class="section-title" style="font-size:16px;">Màu nền trang CV</div>
-        <div class="section-subtitle">Tùy chỉnh màu body của file PDF (không phụ thuộc ảnh nền)</div>
+        <button class="add-btn" onclick="removeBgImage()" style="color:var(--md-sys-color-error);background:rgba(186,26,26,0.08);width:100%;justify-content:center;">
+          <span class="material-icons-round">delete_outline</span> Xóa ảnh nền
+        </button>
       </div>
     </div>
 
-    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">
-      <div class="bg-color-swatch active" data-color="#ffffff" onclick="setBgColor('#ffffff',this)" style="background:#ffffff;border:1.5px solid #ddd;" title="Trắng tinh"></div>
-      <div class="bg-color-swatch" data-color="#F8F6F0" onclick="setBgColor('#F8F6F0',this)" style="background:#F8F6F0;" title="Kem sữa"></div>
-      <div class="bg-color-swatch" data-color="#EFF4FB" onclick="setBgColor('#EFF4FB',this)" style="background:#EFF4FB;" title="Xanh nhạt"></div>
-      <div class="bg-color-swatch" data-color="#F0FBF0" onclick="setBgColor('#F0FBF0',this)" style="background:#F0FBF0;" title="Xanh lá nhạt"></div>
-      <div class="bg-color-swatch" data-color="#FDF5E6" onclick="setBgColor('#FDF5E6',this)" style="background:#FDF5E6;" title="Vàng kem"></div>
-      <div class="bg-color-swatch" data-color="#FDF0F5" onclick="setBgColor('#FDF0F5',this)" style="background:#FDF0F5;" title="Hồng nhạt"></div>
-      <div class="bg-color-swatch" data-color="#F5F0FF" onclick="setBgColor('#F5F0FF',this)" style="background:#F5F0FF;" title="Tím nhạt"></div>
-      <div class="bg-color-swatch" data-color="#FFFDE7" onclick="setBgColor('#FFFDE7',this)" style="background:#FFFDE7;" title="Vàng nhạt"></div>
-      <div class="bg-color-swatch" data-color="#ECEFF1" onclick="setBgColor('#ECEFF1',this)" style="background:#ECEFF1;" title="Xám nhạt"></div>
-      <div class="bg-color-swatch" data-color="#1E1E2E" onclick="setBgColor('#1E1E2E',this)" style="background:#1E1E2E;" title="Đêm tối"></div>
-      <div class="bg-color-swatch" data-color="#2D3748" onclick="setBgColor('#2D3748',this)" style="background:#2D3748;" title="Xám tối"></div>
-      <!-- Rainbow custom picker -->
-      <label class="bg-color-swatch" style="background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red);cursor:pointer;position:relative;overflow:hidden;" title="Màu tùy chỉnh">
-        <span class="material-icons-round" style="font-size:14px;color:white;text-shadow:0 1px 2px rgba(0,0,0,0.8);position:absolute;">colorize</span>
-        <input type="color" id="bg-custom-color" value="#ffffff" oninput="setBgColor(this.value,null)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;">
-      </label>
-    </div>
-    <!-- Color display + preview bar -->
-    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-      <div style="font-size:13px;color:var(--md-sys-color-on-surface-variant);">
-        Màu đã chọn: <strong id="bg-color-hex" style="font-family:monospace;color:var(--md-sys-color-primary);">#ffffff</strong>
+    <!-- SECTION 3: BG COLOR -->
+    <div class="right-panel-section">
+      <div class="right-panel-section-title">
+        <span class="material-icons-round" style="font-size:16px;">format_color_fill</span>
+        Màu nền trang CV
       </div>
-      <div id="pdf-bg-color-preview" style="
-        flex:1;min-width:180px;height:38px;border-radius:var(--shape-corner-medium);
-        border:1.5px solid var(--md-sys-color-outline-variant);
-        background:#ffffff;transition:background 0.3s;
-        display:flex;align-items:center;padding:0 14px;
-      ">
-        <span style="font-size:11px;color:rgba(0,0,0,0.35);font-style:italic;pointer-events:none;">Màu nền CV</span>
-      </div>
-    </div>
-  </div>
-  <div class="action-bar" style="display:none">
-    <div class="action-bar-info">
-      <strong>Sẵn sàng xuất CV?</strong><br>
-      Xem trước trước khi tải về
-    </div>
-    <div class="action-bar-btns">
-      <button class="btn-tonal" onclick="previewCV()">
-        <span class="material-icons-round">preview</span> Xem trước PDF
-      </button>
-      <button class="btn-filled" onclick="downloadCV()">
-        <span class="material-icons-round">download</span> Tải CV (PDF)
-      </button>
-    </div>
-  </div>
 
-</main>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <div class="bg-color-swatch active" data-color="#ffffff" onclick="setBgColor('#ffffff',this)" style="background:#ffffff;border:1.5px solid #ddd;" title="Trắng tinh"></div>
+        <div class="bg-color-swatch" data-color="#F8F6F0" onclick="setBgColor('#F8F6F0',this)" style="background:#F8F6F0;" title="Kem sữa"></div>
+        <div class="bg-color-swatch" data-color="#EFF4FB" onclick="setBgColor('#EFF4FB',this)" style="background:#EFF4FB;" title="Xanh nhạt"></div>
+        <div class="bg-color-swatch" data-color="#F0FBF0" onclick="setBgColor('#F0FBF0',this)" style="background:#F0FBF0;" title="Xanh lá nhạt"></div>
+        <div class="bg-color-swatch" data-color="#FDF5E6" onclick="setBgColor('#FDF5E6',this)" style="background:#FDF5E6;" title="Vàng kem"></div>
+        <div class="bg-color-swatch" data-color="#FDF0F5" onclick="setBgColor('#FDF0F5',this)" style="background:#FDF0F5;" title="Hồng nhạt"></div>
+        <div class="bg-color-swatch" data-color="#F5F0FF" onclick="setBgColor('#F5F0FF',this)" style="background:#F5F0FF;" title="Tím nhạt"></div>
+        <div class="bg-color-swatch" data-color="#FFFDE7" onclick="setBgColor('#FFFDE7',this)" style="background:#FFFDE7;" title="Vàng nhạt"></div>
+        <div class="bg-color-swatch" data-color="#ECEFF1" onclick="setBgColor('#ECEFF1',this)" style="background:#ECEFF1;" title="Xám nhạt"></div>
+        <div class="bg-color-swatch" data-color="#1E1E2E" onclick="setBgColor('#1E1E2E',this)" style="background:#1E1E2E;" title="Đêm tối"></div>
+        <div class="bg-color-swatch" data-color="#2D3748" onclick="setBgColor('#2D3748',this)" style="background:#2D3748;" title="Xám tối"></div>
+        <label class="bg-color-swatch" style="background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red);cursor:pointer;position:relative;overflow:hidden;" title="Màu tùy chỉnh">
+          <span class="material-icons-round" style="font-size:13px;color:white;text-shadow:0 1px 2px rgba(0,0,0,0.8);position:absolute;">colorize</span>
+          <input type="color" id="bg-custom-color" value="#ffffff" oninput="setBgColor(this.value,null)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;">
+        </label>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div id="pdf-bg-color-preview" style="flex:1;height:34px;border-radius:var(--shape-corner-medium);border:1.5px solid var(--md-sys-color-outline-variant);background:#ffffff;transition:background 0.3s;display:flex;align-items:center;padding:0 12px;">
+          <span style="font-size:11px;color:rgba(0,0,0,0.3);font-style:italic;pointer-events:none;">Màu nền CV</span>
+        </div>
+        <strong id="bg-color-hex" style="font-size:12px;font-family:monospace;color:var(--md-sys-color-primary);white-space:nowrap;">#ffffff</strong>
+      </div>
+    </div>
+
+    <!-- SECTION 4: QUICK ACTIONS -->
+    <div class="right-panel-section" style="background:var(--md-sys-color-primary-container);border-radius:0 0 var(--shape-corner-large) var(--shape-corner-large);">
+      <div style="font-size:13px;font-weight:600;color:var(--md-sys-color-on-primary-container);margin-bottom:12px;">⚡ Thao tác nhanh</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button class="btn-tonal" onclick="previewCV()" style="justify-content:center;width:100%;font-size:13px;padding:10px;">
+          <span class="material-icons-round" style="font-size:16px;">preview</span> Xem trước PDF
+        </button>
+        <button class="btn-filled" onclick="downloadCV()" style="justify-content:center;width:100%;font-size:13px;padding:10px;">
+          <span class="material-icons-round" style="font-size:16px;">download</span> Tải CV (PDF)
+        </button>
+      </div>
+    </div>
+
+  </div><!-- end right-panel-body -->
+</div><!-- end create-right -->
+
+</div><!-- end create-layout -->
 
 </div><!-- end #page-create -->
 
@@ -1523,7 +1588,7 @@ function showPage(pageId) {
     if (el) el.style.display = p === pageId ? '' : 'none';
     if (nav) nav.classList.toggle('active', p === pageId);
   });
-  // Show action bar only on create page
+  // Mobile action bar: only show on create page on small screens
   const bar = document.querySelector('.action-bar');
   if (bar) bar.style.display = pageId === 'create' ? '' : 'none';
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2059,6 +2124,14 @@ function collectData() {
   };
 }
 
+// Helper: hex color → rgba string
+function hexToRgba(hex, alpha) {
+  try {
+    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${alpha.toFixed(2)})`;
+  } catch(e) { return `rgba(255,255,255,${alpha.toFixed(2)})`; }
+}
+
 // =================== RENDER CV HTML ===================
 function renderCVHTML(data, theme) {
   const th = pdfThemes.find(t => t.id === theme) || pdfThemes[0];
@@ -2130,42 +2203,53 @@ function renderCVHTML(data, theme) {
 
   const bodyBg = data.pdfBgColor || th.body;
 
-  // Build background image overlay style based on mode
-  let bgOverlayStyle = '';
+  // Build background image CSS directly on the outer wrapper
+  let bgImageCSS = '';
+  let bgFilterWrapCSS = '';
   if (data.bgImage) {
     let bgSizeCSS, bgRepeatCSS, bgPositionCSS;
     const sz = data.bgSize || 'cover';
     switch(sz) {
       case 'stretch':
-        bgSizeCSS = '100% 100%'; bgRepeatCSS = 'no-repeat'; bgPositionCSS = 'center'; break;
+        bgSizeCSS = '100% 100%'; bgRepeatCSS = 'no-repeat'; bgPositionCSS = 'top left'; break;
       case 'cover':
-        bgSizeCSS = 'cover'; bgRepeatCSS = 'no-repeat'; bgPositionCSS = 'center'; break;
+        bgSizeCSS = 'cover';     bgRepeatCSS = 'no-repeat'; bgPositionCSS = 'center'; break;
       case 'contain':
-        bgSizeCSS = 'contain'; bgRepeatCSS = 'no-repeat'; bgPositionCSS = 'center'; break;
+        bgSizeCSS = 'contain';   bgRepeatCSS = 'no-repeat'; bgPositionCSS = 'center'; break;
       case 'repeat':
-        bgSizeCSS = 'auto'; bgRepeatCSS = 'repeat'; bgPositionCSS = 'center'; break;
+        bgSizeCSS = 'auto';      bgRepeatCSS = 'repeat';    bgPositionCSS = 'top left'; break;
       case 'center':
-        bgSizeCSS = '60% auto'; bgRepeatCSS = 'no-repeat'; bgPositionCSS = 'center center'; break;
+        bgSizeCSS = '60% auto';  bgRepeatCSS = 'no-repeat'; bgPositionCSS = 'center center'; break;
       default:
-        bgSizeCSS = 'cover'; bgRepeatCSS = 'no-repeat'; bgPositionCSS = 'center';
+        bgSizeCSS = 'cover';     bgRepeatCSS = 'no-repeat'; bgPositionCSS = 'center';
     }
-    const brightFilter = (data.bgBrightness && data.bgBrightness !== 1) ? `filter:brightness(${data.bgBrightness});` : '';
-    const op = data.bgOpacity || 0.15;
-    bgOverlayStyle = `position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;
+    const op = data.bgOpacity != null ? data.bgOpacity : 0.15;
+    const brightness = (data.bgBrightness && data.bgBrightness !== 1) ? data.bgBrightness : null;
+
+    // We use a wrapper trick: set bg on outer, then overlay a semi-transparent color to achieve opacity
+    // This avoids the absolute-div approach that gets clipped by overflow:hidden
+    bgImageCSS = `
+      background-color:${bodyBg};
       background-image:url(${data.bgImage});
       background-size:${bgSizeCSS};
       background-repeat:${bgRepeatCSS};
       background-position:${bgPositionCSS};
-      opacity:${op};
-      pointer-events:none;
-      z-index:0;
-      ${brightFilter}`;
+    `;
+    // Use a brightness filter on the whole wrapper only for the bg (we'll apply it via inner mask)
+    // Simulate opacity by blending bodyBg over the image using a pseudo overlay inside
+    const overlayAlpha = 1 - op; // higher opacity = less white overlay
+    const overlayColor = bodyBg.startsWith('#') ? hexToRgba(bodyBg, overlayAlpha) : `rgba(255,255,255,${overlayAlpha})`;
+    bgFilterWrapCSS = `background:${overlayColor};${brightness ? `filter:brightness(${brightness});` : ''}`;
   }
 
+  const outerStyle = data.bgImage
+    ? `font-family:'Noto Sans',Arial,sans-serif; width:794px; max-width:100%; margin:0 auto; position:relative; min-height:1123px; ${bgImageCSS}`
+    : `font-family:'Noto Sans',Arial,sans-serif; background:${bodyBg}; width:794px; max-width:100%; margin:0 auto; position:relative; min-height:1123px;`;
+
   return `
-  <div style="font-family:'Noto Sans',Arial,sans-serif; background:${bodyBg}; max-width:794px; margin:0 auto; position:relative; overflow:hidden;">
-    ${data.bgImage ? `<div style="${bgOverlayStyle}"></div>` : ''}
-    <div style="position:relative;z-index:1;">
+  <div style="${outerStyle}">
+    ${data.bgImage ? `<div style="position:absolute;top:0;left:0;width:100%;min-height:100%;height:100%;pointer-events:none;z-index:0;${bgFilterWrapCSS}"></div>` : ''}
+    <div style="position:relative;z-index:1;${!data.bgImage ? '' : ''}">
     <div style="background:${th.headerBg}; padding:32px 36px; display:flex; align-items:center; gap:24px;">
       ${data.photo ? `<img src="${data.photo}" style="width:90px;height:110px;object-fit:cover;border-radius:8px;border:3px solid rgba(255,255,255,0.3);">` : ''}
       <div style="flex:1;">
@@ -2188,8 +2272,6 @@ function renderCVHTML(data, theme) {
       ${actHTML ? sec('🤝','Hoạt Động', actHTML) : ''}
       ${awardHTML ? sec('🏆','Giải Thưởng', awardHTML) : ''}
     </div>
-    <div style="background:${th.sidebarBg};padding:12px 36px;text-align:center;font-size:11px;color:#888;border-top:1px solid ${th.lineColor};">
-      Tạo bởi CVAssist • ${new Date().toLocaleDateString('vi-VN')}
     </div>
     </div>
   </div>`;
@@ -2220,8 +2302,7 @@ async function downloadCV() {
   const html = renderCVHTML(data, selectedTheme);
   const container = document.createElement('div');
   container.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;z-index:-1;';
-  // Dùng màu nền thật thay vì cứng 'white'
-  container.style.background = data.pdfBgColor || '#ffffff';
+  container.style.background = 'transparent'; // let renderCVHTML handle the background
   container.innerHTML = html;
   document.body.appendChild(container);
   await new Promise(r => setTimeout(r, 400));

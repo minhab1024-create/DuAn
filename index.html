@@ -1384,6 +1384,9 @@
         <button class="btn-tonal" onclick="previewCV()" style="justify-content:center;width:100%;font-size:13px;padding:10px;">
           <span class="material-icons-round" style="font-size:16px;">preview</span> Xem trước PDF
         </button>
+        <button class="btn-tonal" onclick="openEditorFromCreate()" style="justify-content:center;width:100%;font-size:13px;padding:10px;background:linear-gradient(135deg,rgba(124,58,237,0.15),rgba(59,130,246,0.15));border:1px solid rgba(124,58,237,0.3);color:#7C3AED;">
+          <span class="material-icons-round" style="font-size:16px;">edit_square</span> Chỉnh sửa PDF
+        </button>
         <button class="btn-filled" onclick="downloadCV()" style="justify-content:center;width:100%;font-size:13px;padding:10px;">
           <span class="material-icons-round" style="font-size:16px;">download</span> Tải CV (PDF)
         </button>
@@ -1617,8 +1620,12 @@
       <button class="btn-tonal" onclick="exportEditorPNG()" style="padding:6px 14px;font-size:13px;height:34px;">
         <span class="material-icons-round" style="font-size:16px;">image</span> PNG
       </button>
+      <button class="btn-tonal" onclick="clearCVBackground()" title="Xóa ảnh CV nền" style="padding:6px 12px;font-size:13px;height:34px;color:var(--md-sys-color-error);">
+        <span class="material-icons-round" style="font-size:16px;">hide_image</span> Xóa nền CV
+      </button>
       <div style="flex:1;"></div>
-      <span style="font-size:11px;color:var(--md-sys-color-on-surface-variant);">Công cụ hiện tại: <strong id="current-tool-label" style="color:var(--md-sys-color-primary);">Chọn</strong></span>
+      <span id="editor-source-label" style="font-size:11px;color:var(--md-sys-color-on-surface-variant);background:var(--md-sys-color-surface-variant);padding:3px 10px;border-radius:20px;display:none;"></span>
+      <span style="font-size:11px;color:var(--md-sys-color-on-surface-variant);">Công cụ: <strong id="current-tool-label" style="color:var(--md-sys-color-primary);">Chọn</strong></span>
     </div>
 
     <!-- CANVAS WRAPPER -->
@@ -1898,6 +1905,9 @@
     </div>
     <div class="modal-footer">
       <button class="btn-outlined" onclick="closeModal()"><span class="material-icons-round">close</span> Đóng</button>
+      <button class="btn-tonal" onclick="openEditorFromPreview()" style="gap:6px;">
+        <span class="material-icons-round" style="font-size:16px;">edit_square</span> Chỉnh sửa PDF
+      </button>
       <button class="btn-filled" onclick="downloadCV()"><span class="material-icons-round">download</span> Tải xuống PDF</button>
     </div>
   </div>
@@ -2775,6 +2785,7 @@ function renderSavedCVs() {
       </div>
       <div class="saved-cv-actions">
         <button class="btn-tonal" style="flex:1;font-size:13px;padding:8px 12px;" onclick="viewSavedCV(${cv.id})"><span class="material-icons-round" style="font-size:16px">preview</span> Xem</button>
+        <button class="btn-tonal" style="flex:1;font-size:13px;padding:8px 12px;color:#7C3AED;border-color:rgba(124,58,237,0.3);" onclick="openEditorFromSaved(${cv.id})"><span class="material-icons-round" style="font-size:16px">edit_square</span> Sửa PDF</button>
         <button class="btn-tonal" style="flex:1;font-size:13px;padding:8px 12px;" onclick="downloadSavedCV(${cv.id})"><span class="material-icons-round" style="font-size:16px">download</span> Tải</button>
         <button class="icon-btn" style="color:var(--md-sys-color-error)" onclick="deleteSavedCV(${cv.id})" title="Xóa CV"><span class="material-icons-round" style="font-size:18px">delete</span></button>
       </div>
@@ -3053,6 +3064,7 @@ function resizeHandleHit(obj, x, y) {
 }
 function findTopObject(x, y) {
   for (let i = editorObjects.length - 1; i >= 0; i--) {
+    if (editorObjects[i].type === '_cvBackground') continue; // CV background is not selectable
     if (hitTest(editorObjects[i], x, y)) return editorObjects[i];
   }
   return null;
@@ -3212,6 +3224,22 @@ function drawObject(ctx, obj, isSelected) {
   ctx.translate(-cx, -cy);
   // Opacity
   ctx.globalAlpha = obj.opacity != null ? obj.opacity : 1;
+
+  if (obj.type === '_cvBackground') {
+    if (obj.imgData) {
+      getCachedImg(obj.imgData, img => {
+        const c2 = getCanvas();
+        const ctx2 = c2.getContext('2d');
+        ctx2.save();
+        ctx2.drawImage(img, 0, 0, CANVAS_W, CANVAS_H);
+        ctx2.restore();
+        // Re-render overlaid objects after background loads
+        editorObjects.slice(1).forEach(o => drawObject(ctx2, o, o.id === selectedId));
+      });
+    }
+    ctx.restore();
+    return;
+  }
 
   if (obj.type === 'text') {
     // Text object
@@ -3565,16 +3593,103 @@ document.addEventListener('keydown', e => {
   }
 });
 
-// ===== EXPORT =====
-function exportEditorPNG() {
-  const c = getCanvas();
-  selectedId = null; redrawCanvas();
-  const link = document.createElement('a');
-  link.download = 'pdf-editor-export.png';
-  link.href = c.toDataURL('image/png');
-  link.click();
+function clearCVBackground() {
+  pushUndo();
+  editorObjects = editorObjects.filter(o => o.type !== '_cvBackground');
+  const lbl = document.getElementById('editor-source-label');
+  if (lbl) lbl.style.display = 'none';
+  editorCurrentCVName = '';
+  redrawCanvas();
+  showSnackbar('🗑️ Đã xóa ảnh CV nền');
 }
 
+// Image cache for background CV renders
+const editorImgCache = {};
+
+function getCachedImg(src, callback) {
+  if (editorImgCache[src]) { callback(editorImgCache[src]); return; }
+  const img = new Image();
+  img.onload = () => { editorImgCache[src] = img; callback(img); };
+  img.src = src;
+}
+
+// ===== LOAD CV INTO EDITOR =====
+let editorCurrentCVName = '';
+
+async function loadCVIntoEditor(htmlContent, cvName) {
+  // Render HTML to a hidden div, then use html2canvas to get an image
+  showSnackbar('⏳ Đang tải CV vào Editor...');
+  editorCurrentCVName = cvName || 'CV';
+
+  const container = document.createElement('div');
+  container.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;z-index:-1;background:white;';
+  container.innerHTML = htmlContent;
+  document.body.appendChild(container);
+  await new Promise(r => setTimeout(r, 400));
+
+  try {
+    const canvas = await html2canvas(container, {
+      scale: 1, useCORS: true, allowTaint: true,
+      backgroundColor: '#ffffff', width: 794,
+      height: 1123, windowWidth: 794, windowHeight: 1123,
+      logging: false,
+    });
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+    // Clear editor and add CV as background image object
+    editorObjects = [];
+    undoStack = []; redoStack = [];
+    selectedId = null;
+    objIdCounter = 1;
+
+    // Background CV image occupying full canvas
+    editorObjects.push({
+      id: objIdCounter++,
+      type: '_cvBackground',   // special type
+      x: 0, y: 0, w: CANVAS_W, h: CANVAS_H,
+      imgData,
+      opacity: 1, rotation: 0, fill: 'transparent', stroke: 'transparent', strokeWidth: 0, borderRadius: 0,
+    });
+
+    redrawCanvas();
+
+    // Show source label
+    const lbl = document.getElementById('editor-source-label');
+    if (lbl) { lbl.textContent = '📄 ' + editorCurrentCVName; lbl.style.display = ''; }
+
+    showPage('editor');
+    setZoom(Math.min(1, (window.innerWidth - 72 - 260 - 80) / CANVAS_W));
+    showSnackbar('✅ CV đã được tải vào Editor!');
+  } catch(e) {
+    showSnackbar('❌ Lỗi tải CV. Thử lại!'); console.error(e);
+  }
+  document.body.removeChild(container);
+}
+
+function openEditorFromCreate() {
+  const data = collectData();
+  if (!data.name) { showSnackbar('⚠️ Vui lòng nhập họ và tên trước!'); return; }
+  const html = renderCVHTML(data, selectedTheme);
+  loadCVIntoEditor(html, data.name + ' — CV');
+}
+
+function openEditorFromPreview() {
+  // Use whatever is currently in cv-render-area
+  const area = document.getElementById('cv-render-area');
+  if (!area || !area.innerHTML.trim()) { openEditorFromCreate(); return; }
+  closeModal();
+  const data = collectData();
+  loadCVIntoEditor(area.innerHTML, (data.name || 'CV') + ' — CV');
+}
+
+function openEditorFromSaved(id) {
+  const saved = getSavedCVs().find(c => c.id === id);
+  if (!saved) return;
+  const html = renderCVHTML(saved.data, saved.data.theme || 'classic');
+  loadCVIntoEditor(html, saved.label);
+}
+
+// ===== EXPORT WITH NAME =====
 async function exportEditorPDF() {
   selectedId = null; redrawCanvas();
   await new Promise(r => setTimeout(r, 100));
@@ -3583,8 +3698,18 @@ async function exportEditorPDF() {
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
-  pdf.save('pdf-editor-export.pdf');
+  const fname = (editorCurrentCVName || 'pdf-editor').replace(/\s+/g,'_');
+  pdf.save(`${fname}_edited.pdf`);
   showSnackbar('✅ Đã xuất PDF thành công!');
+}
+
+function exportEditorPNG() {
+  selectedId = null; redrawCanvas();
+  const c = getCanvas();
+  const link = document.createElement('a');
+  link.download = (editorCurrentCVName || 'pdf-editor').replace(/\s+/g,'_') + '_edited.png';
+  link.href = c.toDataURL('image/png');
+  link.click();
 }
 
 // Init canvas

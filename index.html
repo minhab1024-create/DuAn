@@ -858,6 +858,31 @@
     .theme-grid { grid-template-columns: repeat(3, 1fr); }
     .main-content { padding-bottom: 90px; }
   }
+  /* ========== PDF EDITOR ========== */
+  .editor-tool {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 56px; min-height: 52px; gap: 3px; padding: 6px 4px;
+    border: none; border-radius: 10px; background: transparent;
+    color: var(--md-sys-color-on-surface-variant);
+    cursor: pointer; font-size: 9px; font-family: var(--md-ref-typeface-plain);
+    font-weight: 500; transition: all 0.15s; text-align: center; line-height: 1.1;
+  }
+  .editor-tool:hover { background: var(--md-sys-color-surface-variant); color: var(--md-sys-color-on-surface); }
+  .editor-tool.active { background: var(--md-sys-color-primary-container); color: var(--md-sys-color-primary); font-weight: 700; }
+  .editor-tool .material-icons-round { font-size: 20px; }
+  .editor-tool-divider { width: 40px; height: 1px; background: var(--md-sys-color-outline-variant); margin: 4px 0; flex-shrink: 0; }
+  .props-section { padding: 14px 14px 12px; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+  .props-title { font-size: 12px; font-weight: 700; color: var(--md-sys-color-primary); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .props-row { margin-bottom: 10px; }
+  .props-label { display: block; font-size: 11px; color: var(--md-sys-color-on-surface-variant); margin-bottom: 4px; font-weight: 500; }
+  .style-toggle-btn {
+    width: 32px; height: 30px; border-radius: 6px; border: 1.5px solid var(--md-sys-color-outline-variant);
+    background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface);
+    cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+  }
+  .style-toggle-btn:hover { border-color: var(--md-sys-color-primary); color: var(--md-sys-color-primary); }
+  .style-toggle-btn.active { background: var(--md-sys-color-primary-container); color: var(--md-sys-color-primary); border-color: var(--md-sys-color-primary); }
+  #page-editor .text-field { padding: 6px 10px; font-size: 13px; }
 </style>
 </head>
 <body>
@@ -883,6 +908,10 @@
       </a>
       <a class="nav-item" href="#" onclick="showPage('guide'); return false;" id="nav-guide">
         <span class="material-icons-round">menu_book</span> Hướng dẫn
+      </a>
+      <a class="nav-item" href="#" onclick="showPage('editor'); return false;" id="nav-editor" style="background:linear-gradient(135deg,rgba(124,58,237,0.15),rgba(59,130,246,0.15));border:1px solid rgba(124,58,237,0.3);">
+        <span class="material-icons-round" style="background:linear-gradient(135deg,#7C3AED,#3B82F6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">edit_square</span>
+        <span style="background:linear-gradient(135deg,#7C3AED,#3B82F6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;">PDF Editor</span>
       </a>
     </nav>
   </div>
@@ -915,6 +944,9 @@
     </a>
     <a class="drawer-item" href="#" onclick="showPage('guide'); toggleMobileMenu(); return false;">
       <span class="material-icons-round">menu_book</span> Hướng dẫn
+    </a>
+    <a class="drawer-item" href="#" onclick="showPage('editor'); toggleMobileMenu(); return false;" style="color:#7C3AED;font-weight:700;">
+      <span class="material-icons-round" style="color:#7C3AED;">edit_square</span> PDF Editor
     </a>
   </nav>
 </div>
@@ -1450,6 +1482,331 @@
   <span class="material-icons-round">keyboard_arrow_up</span>
 </button>
 
+<!-- ============ PAGE: PDF EDITOR ============ -->
+<div id="page-editor" style="display:none">
+<div style="display:flex;height:calc(100vh - 64px);overflow:hidden;background:var(--md-sys-color-background);">
+
+  <!-- LEFT TOOLBAR -->
+  <div id="editor-toolbar" style="
+    width:72px;flex-shrink:0;
+    background:var(--md-sys-color-surface-container);
+    border-right:1px solid var(--md-sys-color-outline-variant);
+    display:flex;flex-direction:column;align-items:center;
+    padding:12px 0;gap:4px;overflow-y:auto;z-index:10;
+  ">
+    <!-- Tool groups -->
+    <div style="font-size:9px;color:var(--md-sys-color-on-surface-variant);text-transform:uppercase;letter-spacing:0.5px;margin:6px 0 4px;text-align:center;">Chọn</div>
+    <button class="editor-tool active" id="tool-select" onclick="setTool('select')" title="Chọn (V)">
+      <span class="material-icons-round">near_me</span>
+      <span>Chọn</span>
+    </button>
+
+    <div class="editor-tool-divider"></div>
+    <div style="font-size:9px;color:var(--md-sys-color-on-surface-variant);text-transform:uppercase;letter-spacing:0.5px;margin:6px 0 4px;text-align:center;">Chữ</div>
+    <button class="editor-tool" id="tool-text" onclick="setTool('text')" title="Văn bản (T)">
+      <span class="material-icons-round">text_fields</span>
+      <span>Chữ</span>
+    </button>
+
+    <div class="editor-tool-divider"></div>
+    <div style="font-size:9px;color:var(--md-sys-color-on-surface-variant);text-transform:uppercase;letter-spacing:0.5px;margin:6px 0 4px;text-align:center;">Hình</div>
+    <button class="editor-tool" id="tool-rect" onclick="setTool('rect')" title="Hình chữ nhật (R)">
+      <span class="material-icons-round">crop_square</span>
+      <span>Vuông</span>
+    </button>
+    <button class="editor-tool" id="tool-circle" onclick="setTool('circle')" title="Hình tròn (C)">
+      <span class="material-icons-round">circle</span>
+      <span>Tròn</span>
+    </button>
+    <button class="editor-tool" id="tool-triangle" onclick="setTool('triangle')" title="Tam giác">
+      <span class="material-icons-round">change_history</span>
+      <span>Tam giác</span>
+    </button>
+    <button class="editor-tool" id="tool-hexagon" onclick="setTool('hexagon')" title="Lục giác">
+      <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="12,2 22,7 22,17 12,22 2,17 2,7" fill="currentColor"/></svg>
+      <span>Lục giác</span>
+    </button>
+    <button class="editor-tool" id="tool-pentagon" onclick="setTool('pentagon')" title="Ngũ giác">
+      <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="12,2 22,9 18,21 6,21 2,9" fill="currentColor"/></svg>
+      <span>Ngũ giác</span>
+    </button>
+    <button class="editor-tool" id="tool-star" onclick="setTool('star')" title="Ngôi sao">
+      <span class="material-icons-round">star</span>
+      <span>Sao</span>
+    </button>
+    <button class="editor-tool" id="tool-star6" onclick="setTool('star6')" title="Sao 6 cánh">
+      <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="12,2 14.5,9 22,9 16,14 18.5,21 12,17 5.5,21 8,14 2,9 9.5,9" fill="currentColor"/></svg>
+      <span>Sao 6</span>
+    </button>
+    <button class="editor-tool" id="tool-diamond" onclick="setTool('diamond')" title="Hình thoi">
+      <span class="material-icons-round">diamond</span>
+      <span>Thoi</span>
+    </button>
+    <button class="editor-tool" id="tool-arrow" onclick="setTool('arrow')" title="Mũi tên">
+      <span class="material-icons-round">arrow_forward</span>
+      <span>Mũi tên</span>
+    </button>
+    <button class="editor-tool" id="tool-line" onclick="setTool('line')" title="Đường thẳng">
+      <span class="material-icons-round">horizontal_rule</span>
+      <span>Đường</span>
+    </button>
+    <button class="editor-tool" id="tool-cross" onclick="setTool('cross')" title="Hình chữ thập">
+      <span class="material-icons-round">add</span>
+      <span>Chữ thập</span>
+    </button>
+    <button class="editor-tool" id="tool-octagon" onclick="setTool('octagon')" title="Bát giác">
+      <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="9,2 15,2 22,9 22,15 15,22 9,22 2,15 2,9" fill="currentColor"/></svg>
+      <span>Bát giác</span>
+    </button>
+    <button class="editor-tool" id="tool-parallelogram" onclick="setTool('parallelogram')" title="Bình hành">
+      <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="6,2 22,2 18,22 2,22" fill="currentColor"/></svg>
+      <span>Bình hành</span>
+    </button>
+    <button class="editor-tool" id="tool-heart" onclick="setTool('heart')" title="Trái tim">
+      <span class="material-icons-round">favorite</span>
+      <span>Tim</span>
+    </button>
+    <button class="editor-tool" id="tool-cloud" onclick="setTool('cloud')" title="Đám mây">
+      <span class="material-icons-round">cloud</span>
+      <span>Mây</span>
+    </button>
+    <button class="editor-tool" id="tool-speech" onclick="setTool('speech')" title="Bong bóng chat">
+      <span class="material-icons-round">chat_bubble</span>
+      <span>Chat</span>
+    </button>
+
+    <div class="editor-tool-divider"></div>
+    <div style="font-size:9px;color:var(--md-sys-color-on-surface-variant);text-transform:uppercase;letter-spacing:0.5px;margin:6px 0 4px;text-align:center;">Xóa</div>
+    <button class="editor-tool" onclick="deleteSelected()" title="Xóa đối tượng" style="color:var(--md-sys-color-error);">
+      <span class="material-icons-round">delete</span>
+      <span>Xóa</span>
+    </button>
+    <button class="editor-tool" onclick="clearAll()" title="Xóa tất cả" style="color:var(--md-sys-color-error);">
+      <span class="material-icons-round">delete_sweep</span>
+      <span>Xóa hết</span>
+    </button>
+  </div>
+
+  <!-- CANVAS AREA -->
+  <div style="flex:1;overflow:auto;display:flex;flex-direction:column;background:#e8eaed;">
+    <!-- TOP BAR -->
+    <div style="
+      background:var(--md-sys-color-surface-container-high);
+      border-bottom:1px solid var(--md-sys-color-outline-variant);
+      padding:8px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+      position:sticky;top:0;z-index:5;
+    ">
+      <!-- Undo/Redo -->
+      <button class="icon-btn" onclick="editorUndo()" title="Hoàn tác (Ctrl+Z)" style="width:34px;height:34px;"><span class="material-icons-round" style="font-size:18px;">undo</span></button>
+      <button class="icon-btn" onclick="editorRedo()" title="Làm lại (Ctrl+Y)" style="width:34px;height:34px;"><span class="material-icons-round" style="font-size:18px;">redo</span></button>
+      <div style="width:1px;height:28px;background:var(--md-sys-color-outline-variant);margin:0 4px;"></div>
+      <!-- Zoom -->
+      <button class="icon-btn" onclick="setZoom(editorZoom-0.1)" style="width:34px;height:34px;"><span class="material-icons-round" style="font-size:18px;">remove</span></button>
+      <span id="zoom-label" style="font-size:12px;font-weight:600;color:var(--md-sys-color-on-surface);min-width:44px;text-align:center;">100%</span>
+      <button class="icon-btn" onclick="setZoom(editorZoom+0.1)" style="width:34px;height:34px;"><span class="material-icons-round" style="font-size:18px;">add</span></button>
+      <button class="icon-btn" onclick="setZoom(1)" title="Reset zoom" style="width:34px;height:34px;font-size:10px;font-weight:700;">1:1</button>
+      <div style="width:1px;height:28px;background:var(--md-sys-color-outline-variant);margin:0 4px;"></div>
+      <!-- Layer -->
+      <button class="icon-btn" onclick="bringForward()" title="Lên trên" style="width:34px;height:34px;"><span class="material-icons-round" style="font-size:18px;">flip_to_front</span></button>
+      <button class="icon-btn" onclick="sendBackward()" title="Xuống dưới" style="width:34px;height:34px;"><span class="material-icons-round" style="font-size:18px;">flip_to_back</span></button>
+      <div style="width:1px;height:28px;background:var(--md-sys-color-outline-variant);margin:0 4px;"></div>
+      <!-- Export -->
+      <button class="btn-filled" onclick="exportEditorPDF()" style="padding:6px 16px;font-size:13px;height:34px;">
+        <span class="material-icons-round" style="font-size:16px;">download</span> Xuất PDF
+      </button>
+      <button class="btn-tonal" onclick="exportEditorPNG()" style="padding:6px 14px;font-size:13px;height:34px;">
+        <span class="material-icons-round" style="font-size:16px;">image</span> PNG
+      </button>
+      <div style="flex:1;"></div>
+      <span style="font-size:11px;color:var(--md-sys-color-on-surface-variant);">Công cụ hiện tại: <strong id="current-tool-label" style="color:var(--md-sys-color-primary);">Chọn</strong></span>
+    </div>
+
+    <!-- CANVAS WRAPPER -->
+    <div style="flex:1;display:flex;align-items:flex-start;justify-content:center;padding:32px;overflow:auto;">
+      <div style="position:relative;box-shadow:0 8px 40px rgba(0,0,0,0.25);">
+        <canvas id="editor-canvas" width="794" height="1123"
+          style="display:block;background:white;cursor:crosshair;"
+          onmousedown="canvasMouseDown(event)"
+          onmousemove="canvasMouseMove(event)"
+          onmouseup="canvasMouseUp(event)"
+          onclick="canvasClick(event)"
+          ondblclick="canvasDblClick(event)">
+        </canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PROPERTIES PANEL -->
+  <div id="editor-props" style="
+    width:260px;flex-shrink:0;
+    background:var(--md-sys-color-surface-container);
+    border-left:1px solid var(--md-sys-color-outline-variant);
+    overflow-y:auto;padding:0;
+  ">
+    <!-- FILL & STROKE -->
+    <div class="props-section">
+      <div class="props-title"><span class="material-icons-round" style="font-size:15px;">palette</span> Màu sắc</div>
+      <div class="props-row">
+        <label class="props-label">Màu nền (Fill)</label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="color" id="prop-fill" value="#4F86F7" onchange="applyProp('fill',this.value)" style="width:36px;height:28px;border:none;border-radius:6px;cursor:pointer;padding:2px;background:transparent;">
+          <input type="text" id="prop-fill-hex" value="#4F86F7" onchange="if(this.value.match(/^#[0-9A-Fa-f]{6}$/)){document.getElementById('prop-fill').value=this.value;applyProp('fill',this.value)}" style="flex:1;font-family:monospace;font-size:12px;" class="text-field">
+          <button onclick="applyProp('fill','transparent')" title="Trong suốt" style="width:28px;height:28px;border:1.5px solid var(--md-sys-color-outline-variant);border-radius:6px;background:transparent;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;"><span class="material-icons-round" style="font-size:14px;color:var(--md-sys-color-on-surface-variant);">format_color_reset</span></button>
+        </div>
+      </div>
+      <div class="props-row">
+        <label class="props-label">Màu viền (Stroke)</label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="color" id="prop-stroke" value="#1a1a2e" onchange="applyProp('stroke',this.value)" style="width:36px;height:28px;border:none;border-radius:6px;cursor:pointer;padding:2px;background:transparent;">
+          <input type="text" id="prop-stroke-hex" value="#1a1a2e" onchange="if(this.value.match(/^#[0-9A-Fa-f]{6}$/)){document.getElementById('prop-stroke').value=this.value;applyProp('stroke',this.value)}" style="flex:1;font-family:monospace;font-size:12px;" class="text-field">
+          <button onclick="applyProp('stroke','transparent')" title="Không viền" style="width:28px;height:28px;border:1.5px solid var(--md-sys-color-outline-variant);border-radius:6px;background:transparent;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;"><span class="material-icons-round" style="font-size:14px;color:var(--md-sys-color-on-surface-variant);">format_color_reset</span></button>
+        </div>
+      </div>
+      <div class="props-row">
+        <label class="props-label">Độ dày viền</label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="range" id="prop-strokew" min="0" max="20" value="2" oninput="applyProp('strokeWidth',parseInt(this.value));document.getElementById('prop-strokew-val').textContent=this.value+'px'" style="flex:1;">
+          <span id="prop-strokew-val" style="font-size:12px;font-weight:600;color:var(--md-sys-color-primary);min-width:30px;">2px</span>
+        </div>
+      </div>
+      <div class="props-row">
+        <label class="props-label">Độ mờ (Opacity)</label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="range" id="prop-opacity" min="0" max="100" value="100" oninput="applyProp('opacity',parseInt(this.value)/100);document.getElementById('prop-opacity-val').textContent=this.value+'%'" style="flex:1;">
+          <span id="prop-opacity-val" style="font-size:12px;font-weight:600;color:var(--md-sys-color-primary);min-width:36px;">100%</span>
+        </div>
+      </div>
+      <!-- Color presets -->
+      <div class="props-row">
+        <label class="props-label">Màu nhanh</label>
+        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;">
+          <button onclick="applyProp('fill','#EF4444')" style="width:22px;height:22px;border-radius:50%;border:2px solid rgba(0,0,0,0.15);background:#EF4444;cursor:pointer;" title="#EF4444"></button>
+          <button onclick="applyProp('fill','#F97316')" style="width:22px;height:22px;border-radius:50%;border:2px solid rgba(0,0,0,0.15);background:#F97316;cursor:pointer;" title="#F97316"></button>
+          <button onclick="applyProp('fill','#EAB308')" style="width:22px;height:22px;border-radius:50%;border:2px solid rgba(0,0,0,0.15);background:#EAB308;cursor:pointer;" title="#EAB308"></button>
+          <button onclick="applyProp('fill','#22C55E')" style="width:22px;height:22px;border-radius:50%;border:2px solid rgba(0,0,0,0.15);background:#22C55E;cursor:pointer;" title="#22C55E"></button>
+          <button onclick="applyProp('fill','#06B6D4')" style="width:22px;height:22px;border-radius:50%;border:2px solid rgba(0,0,0,0.15);background:#06B6D4;cursor:pointer;" title="#06B6D4"></button>
+          <button onclick="applyProp('fill','#3B82F6')" style="width:22px;height:22px;border-radius:50%;border:2px solid rgba(0,0,0,0.15);background:#3B82F6;cursor:pointer;" title="#3B82F6"></button>
+          <button onclick="applyProp('fill','#8B5CF6')" style="width:22px;height:22px;border-radius:50%;border:2px solid rgba(0,0,0,0.15);background:#8B5CF6;cursor:pointer;" title="#8B5CF6"></button>
+          <button onclick="applyProp('fill','#EC4899')" style="width:22px;height:22px;border-radius:50%;border:2px solid rgba(0,0,0,0.15);background:#EC4899;cursor:pointer;" title="#EC4899"></button>
+          <button onclick="applyProp('fill','#ffffff')" style="width:22px;height:22px;border-radius:50%;border:2px solid #ccc;background:#ffffff;cursor:pointer;" title="Trắng"></button>
+          <button onclick="applyProp('fill','#F3F4F6')" style="width:22px;height:22px;border-radius:50%;border:2px solid rgba(0,0,0,0.15);background:#F3F4F6;cursor:pointer;" title="#F3F4F6"></button>
+          <button onclick="applyProp('fill','#6B7280')" style="width:22px;height:22px;border-radius:50%;border:2px solid rgba(0,0,0,0.15);background:#6B7280;cursor:pointer;" title="#6B7280"></button>
+          <button onclick="applyProp('fill','#1F2937')" style="width:22px;height:22px;border-radius:50%;border:2px solid rgba(0,0,0,0.15);background:#1F2937;cursor:pointer;" title="#1F2937"></button>
+          <button onclick="applyProp('fill','#000000')" style="width:22px;height:22px;border-radius:50%;border:2px solid rgba(0,0,0,0.15);background:#000000;cursor:pointer;" title="Đen"></button>
+          <button onclick="applyProp('fill','transparent')" title="Trong suốt" style="width:22px;height:22px;border-radius:50%;border:2px solid #ccc;background:transparent;cursor:pointer;font-size:11px;line-height:1;">∅</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEXT PROPERTIES -->
+    <div class="props-section" id="text-props-section">
+      <div class="props-title"><span class="material-icons-round" style="font-size:15px;">text_fields</span> Văn bản</div>
+      <div class="props-row">
+        <label class="props-label">Nội dung</label>
+        <textarea id="prop-text" rows="2" class="text-field" style="font-size:12px;resize:vertical;" oninput="applyProp('text',this.value)" placeholder="Nhập văn bản..."></textarea>
+      </div>
+      <div class="props-row">
+        <label class="props-label">Font chữ</label>
+        <select id="prop-font" class="text-field" style="font-size:12px;" onchange="applyProp('fontFamily',this.value)">
+          <option value="'Noto Sans', sans-serif">Noto Sans</option>
+          <option value="'Google Sans', sans-serif">Google Sans</option>
+          <option value="Arial, sans-serif">Arial</option>
+          <option value="'Times New Roman', serif">Times New Roman</option>
+          <option value="Georgia, serif">Georgia</option>
+          <option value="'Courier New', monospace">Courier New</option>
+          <option value="Verdana, sans-serif">Verdana</option>
+          <option value="Tahoma, sans-serif">Tahoma</option>
+          <option value="Impact, sans-serif">Impact</option>
+          <option value="'Comic Sans MS', cursive">Comic Sans</option>
+          <option value="Palatino, serif">Palatino</option>
+          <option value="'Trebuchet MS', sans-serif">Trebuchet</option>
+        </select>
+      </div>
+      <div class="props-row">
+        <label class="props-label">Cỡ chữ</label>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <input type="range" id="prop-fontsize" min="8" max="120" value="18" oninput="applyProp('fontSize',parseInt(this.value));document.getElementById('prop-fontsize-val').textContent=this.value+'px'" style="flex:1;">
+          <span id="prop-fontsize-val" style="font-size:12px;font-weight:600;color:var(--md-sys-color-primary);min-width:36px;">18px</span>
+        </div>
+      </div>
+      <div class="props-row">
+        <label class="props-label">Kiểu chữ</label>
+        <div style="display:flex;gap:6px;">
+          <button id="btn-bold" onclick="toggleTextStyle('bold')" title="In đậm" class="style-toggle-btn"><b>B</b></button>
+          <button id="btn-italic" onclick="toggleTextStyle('italic')" title="In nghiêng" class="style-toggle-btn"><i>I</i></button>
+          <button id="btn-underline" onclick="toggleTextStyle('underline')" title="Gạch chân" class="style-toggle-btn"><u>U</u></button>
+        </div>
+      </div>
+      <div class="props-row">
+        <label class="props-label">Căn chữ</label>
+        <div style="display:flex;gap:6px;">
+          <button onclick="applyProp('textAlign','left')" title="Trái" class="style-toggle-btn"><span class="material-icons-round" style="font-size:14px;">format_align_left</span></button>
+          <button onclick="applyProp('textAlign','center')" title="Giữa" class="style-toggle-btn"><span class="material-icons-round" style="font-size:14px;">format_align_center</span></button>
+          <button onclick="applyProp('textAlign','right')" title="Phải" class="style-toggle-btn"><span class="material-icons-round" style="font-size:14px;">format_align_right</span></button>
+        </div>
+      </div>
+      <div class="props-row">
+        <label class="props-label">Màu chữ</label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="color" id="prop-textcolor" value="#1a1a2e" onchange="applyProp('textColor',this.value)" style="width:36px;height:28px;border:none;border-radius:6px;cursor:pointer;padding:2px;background:transparent;">
+          <input type="text" id="prop-textcolor-hex" value="#1a1a2e" onchange="if(this.value.match(/^#[0-9A-Fa-f]{6}$/)){document.getElementById('prop-textcolor').value=this.value;applyProp('textColor',this.value)}" style="flex:1;font-family:monospace;font-size:12px;" class="text-field">
+        </div>
+      </div>
+    </div>
+
+    <!-- SIZE & POSITION -->
+    <div class="props-section">
+      <div class="props-title"><span class="material-icons-round" style="font-size:15px;">straighten</span> Vị trí & Kích thước</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div>
+          <label class="props-label" style="font-size:10px;">X</label>
+          <input type="number" id="prop-x" class="text-field" style="font-size:12px;padding:6px 8px;" onchange="applyPropXY('x',parseInt(this.value))">
+        </div>
+        <div>
+          <label class="props-label" style="font-size:10px;">Y</label>
+          <input type="number" id="prop-y" class="text-field" style="font-size:12px;padding:6px 8px;" onchange="applyPropXY('y',parseInt(this.value))">
+        </div>
+        <div>
+          <label class="props-label" style="font-size:10px;">Rộng</label>
+          <input type="number" id="prop-w" class="text-field" style="font-size:12px;padding:6px 8px;" onchange="applyPropXY('w',parseInt(this.value))">
+        </div>
+        <div>
+          <label class="props-label" style="font-size:10px;">Cao</label>
+          <input type="number" id="prop-h" class="text-field" style="font-size:12px;padding:6px 8px;" onchange="applyPropXY('h',parseInt(this.value))">
+        </div>
+      </div>
+      <div class="props-row" style="margin-top:8px;">
+        <label class="props-label">Góc xoay</label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="range" id="prop-rotation" min="-180" max="180" value="0" oninput="applyProp('rotation',parseInt(this.value));document.getElementById('prop-rotation-val').textContent=this.value+'°'" style="flex:1;">
+          <span id="prop-rotation-val" style="font-size:12px;font-weight:600;color:var(--md-sys-color-primary);min-width:36px;">0°</span>
+        </div>
+      </div>
+      <div class="props-row">
+        <label class="props-label">Bo góc</label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="range" id="prop-radius" min="0" max="100" value="0" oninput="applyProp('borderRadius',parseInt(this.value));document.getElementById('prop-radius-val').textContent=this.value+'px'" style="flex:1;">
+          <span id="prop-radius-val" style="font-size:12px;font-weight:600;color:var(--md-sys-color-primary);min-width:36px;">0px</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- INFO -->
+    <div class="props-section">
+      <div style="font-size:11px;color:var(--md-sys-color-on-surface-variant);line-height:1.7;">
+        <div>📌 <strong>Click</strong> để chọn đối tượng</div>
+        <div>📌 <strong>Kéo</strong> để di chuyển</div>
+        <div>📌 <strong>Double-click</strong> để chỉnh chữ</div>
+        <div>📌 <strong>Ctrl+Z</strong> hoàn tác</div>
+        <div>📌 <strong>Delete</strong> xóa đối tượng</div>
+        <div>📌 <strong>Kéo góc dưới-phải</strong> để resize</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div><!-- end #page-editor -->
+
 <!-- SNACKBAR -->
 <div class="snackbar" id="snackbar"></div>
 
@@ -1580,7 +1937,7 @@ function toggleMobileMenu() {
 }
 
 // =================== PAGE NAVIGATION ===================
-const pages = ['home', 'create', 'saved', 'guide'];
+const pages = ['home', 'create', 'saved', 'guide', 'editor'];
 function showPage(pageId) {
   pages.forEach(p => {
     const el = document.getElementById(`page-${p}`);
@@ -2617,6 +2974,624 @@ function clearChat() {
     </div>`;
   document.getElementById('chat-status') && (document.getElementById('chat-status').textContent = 'Trợ lý CV thông minh');
 }
+</script>
+<!-- ============ PDF EDITOR ENGINE ============ -->
+<script>
+// ===== STATE =====
+let editorObjects = [];   // all objects on canvas
+let selectedId = null;
+let currentTool = 'select';
+let editorZoom = 1;
+let isDrawing = false;
+let drawStart = { x: 0, y: 0 };
+let dragState = null;      // { type: 'move'|'resize', startX, startY, origObj }
+let undoStack = [];
+let redoStack = [];
+let editingTextId = null;
+let objIdCounter = 1;
+
+const CANVAS_W = 794, CANVAS_H = 1123;
+
+// ===== CANVAS SETUP =====
+function getCanvas() { return document.getElementById('editor-canvas'); }
+function getCtx()    { return getCanvas().getContext('2d'); }
+
+// ===== TOOL =====
+const toolLabels = {
+  select:'Chọn', text:'Văn bản',
+  rect:'Hình chữ nhật', circle:'Hình tròn', triangle:'Tam giác',
+  hexagon:'Lục giác', pentagon:'Ngũ giác', star:'Ngôi sao',
+  star6:'Sao 6 cánh', diamond:'Hình thoi', arrow:'Mũi tên',
+  line:'Đường thẳng', cross:'Chữ thập', octagon:'Bát giác',
+  parallelogram:'Bình hành', heart:'Trái tim', cloud:'Đám mây', speech:'Bong bóng chat'
+};
+function setTool(t) {
+  currentTool = t;
+  document.querySelectorAll('.editor-tool').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('tool-' + t);
+  if (btn) btn.classList.add('active');
+  const lbl = document.getElementById('current-tool-label');
+  if (lbl) lbl.textContent = toolLabels[t] || t;
+  const c = getCanvas();
+  c.style.cursor = t === 'select' ? 'default' : 'crosshair';
+  // Show/hide text props
+  const tp = document.getElementById('text-props-section');
+  if (tp) tp.style.display = (t === 'text') ? '' : '';
+}
+
+// ===== ZOOM =====
+function setZoom(z) {
+  editorZoom = Math.max(0.3, Math.min(3, z));
+  const c = getCanvas();
+  c.style.width  = (CANVAS_W * editorZoom) + 'px';
+  c.style.height = (CANVAS_H * editorZoom) + 'px';
+  document.getElementById('zoom-label').textContent = Math.round(editorZoom * 100) + '%';
+}
+
+// ===== COORD CONVERT (screen → canvas) =====
+function screenToCanvas(e) {
+  const c = getCanvas();
+  const rect = c.getBoundingClientRect();
+  return {
+    x: (e.clientX - rect.left) / editorZoom,
+    y: (e.clientY - rect.top)  / editorZoom
+  };
+}
+
+// ===== HIT TEST =====
+function hitTest(obj, x, y) {
+  const cx = obj.x + obj.w / 2, cy = obj.y + obj.h / 2;
+  // transform point into object's local space (undo rotation)
+  const a = -(obj.rotation || 0) * Math.PI / 180;
+  const lx = Math.cos(a) * (x - cx) - Math.sin(a) * (y - cy) + cx;
+  const ly = Math.sin(a) * (x - cx) + Math.cos(a) * (y - cy) + cy;
+  return lx >= obj.x && lx <= obj.x + obj.w && ly >= obj.y && ly <= obj.y + obj.h;
+}
+function resizeHandleHit(obj, x, y) {
+  const hx = obj.x + obj.w - 6, hy = obj.y + obj.h - 6;
+  return Math.abs(x - hx) < 10 && Math.abs(y - hy) < 10;
+}
+function findTopObject(x, y) {
+  for (let i = editorObjects.length - 1; i >= 0; i--) {
+    if (hitTest(editorObjects[i], x, y)) return editorObjects[i];
+  }
+  return null;
+}
+
+// ===== UNDO / REDO =====
+function pushUndo() {
+  undoStack.push(JSON.stringify(editorObjects));
+  if (undoStack.length > 50) undoStack.shift();
+  redoStack = [];
+}
+function editorUndo() {
+  if (!undoStack.length) return;
+  redoStack.push(JSON.stringify(editorObjects));
+  editorObjects = JSON.parse(undoStack.pop());
+  selectedId = null; redrawCanvas(); updateProps();
+}
+function editorRedo() {
+  if (!redoStack.length) return;
+  undoStack.push(JSON.stringify(editorObjects));
+  editorObjects = JSON.parse(redoStack.pop());
+  selectedId = null; redrawCanvas(); updateProps();
+}
+
+// ===== DRAW SHAPES (SVG-path style on canvas) =====
+function polyPoints(cx, cy, r, n, startAngle = -Math.PI/2) {
+  const pts = [];
+  for (let i = 0; i < n; i++) pts.push([
+    cx + r * Math.cos(startAngle + i * 2 * Math.PI / n),
+    cy + r * Math.sin(startAngle + i * 2 * Math.PI / n)
+  ]);
+  return pts;
+}
+function starPoints(cx, cy, rOuter, rInner, n) {
+  const pts = [];
+  for (let i = 0; i < n * 2; i++) {
+    const r = i % 2 === 0 ? rOuter : rInner;
+    const a = -Math.PI / 2 + i * Math.PI / n;
+    pts.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]);
+  }
+  return pts;
+}
+
+function applyShapePath(ctx, obj) {
+  const { x, y, w, h, type } = obj;
+  const cx = x + w / 2, cy = y + h / 2;
+  const rx = w / 2, ry = h / 2;
+  const br = obj.borderRadius || 0;
+
+  ctx.beginPath();
+  switch (type) {
+    case 'rect': {
+      const r = Math.min(br, w / 2, h / 2);
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y); ctx.arcTo(x + w, y, x + w, y + r, r);
+      ctx.lineTo(x + w, y + h - r); ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+      ctx.lineTo(x + r, y + h); ctx.arcTo(x, y + h, x, y + h - r, r);
+      ctx.lineTo(x, y + r); ctx.arcTo(x, y, x + r, y, r);
+      ctx.closePath(); break;
+    }
+    case 'circle':
+      ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); break;
+    case 'triangle': {
+      const pts = [[cx, y], [x + w, y + h], [x, y + h]];
+      ctx.moveTo(...pts[0]); pts.slice(1).forEach(p => ctx.lineTo(...p)); ctx.closePath(); break;
+    }
+    case 'diamond': {
+      ctx.moveTo(cx, y); ctx.lineTo(x + w, cy); ctx.lineTo(cx, y + h); ctx.lineTo(x, cy); ctx.closePath(); break;
+    }
+    case 'hexagon': {
+      const pts = polyPoints(cx, cy, Math.min(rx, ry), 6);
+      ctx.moveTo(...pts[0]); pts.slice(1).forEach(p => ctx.lineTo(...p)); ctx.closePath(); break;
+    }
+    case 'pentagon': {
+      const pts = polyPoints(cx, cy, Math.min(rx, ry), 5);
+      ctx.moveTo(...pts[0]); pts.slice(1).forEach(p => ctx.lineTo(...p)); ctx.closePath(); break;
+    }
+    case 'octagon': {
+      const pts = polyPoints(cx, cy, Math.min(rx, ry), 8);
+      ctx.moveTo(...pts[0]); pts.slice(1).forEach(p => ctx.lineTo(...p)); ctx.closePath(); break;
+    }
+    case 'star': {
+      const pts = starPoints(cx, cy, Math.min(rx, ry), Math.min(rx, ry) * 0.45, 5);
+      ctx.moveTo(...pts[0]); pts.slice(1).forEach(p => ctx.lineTo(...p)); ctx.closePath(); break;
+    }
+    case 'star6': {
+      const pts = starPoints(cx, cy, Math.min(rx, ry), Math.min(rx, ry) * 0.5, 6);
+      ctx.moveTo(...pts[0]); pts.slice(1).forEach(p => ctx.lineTo(...p)); ctx.closePath(); break;
+    }
+    case 'arrow': {
+      const hw = h * 0.4, hl = w * 0.35;
+      ctx.moveTo(x, cy - hw / 2); ctx.lineTo(x + w - hl, cy - hw / 2);
+      ctx.lineTo(x + w - hl, y); ctx.lineTo(x + w, cy);
+      ctx.lineTo(x + w - hl, y + h); ctx.lineTo(x + w - hl, cy + hw / 2);
+      ctx.lineTo(x, cy + hw / 2); ctx.closePath(); break;
+    }
+    case 'line':
+      ctx.moveTo(x, cy); ctx.lineTo(x + w, cy); break;
+    case 'cross': {
+      const t3 = w / 3, t3h = h / 3;
+      ctx.moveTo(x + t3, y); ctx.lineTo(x + t3 * 2, y);
+      ctx.lineTo(x + t3 * 2, y + t3h); ctx.lineTo(x + w, y + t3h);
+      ctx.lineTo(x + w, y + t3h * 2); ctx.lineTo(x + t3 * 2, y + t3h * 2);
+      ctx.lineTo(x + t3 * 2, y + h); ctx.lineTo(x + t3, y + h);
+      ctx.lineTo(x + t3, y + t3h * 2); ctx.lineTo(x, y + t3h * 2);
+      ctx.lineTo(x, y + t3h); ctx.lineTo(x + t3, y + t3h); ctx.closePath(); break;
+    }
+    case 'parallelogram': {
+      const offset = w * 0.2;
+      ctx.moveTo(x + offset, y); ctx.lineTo(x + w, y);
+      ctx.lineTo(x + w - offset, y + h); ctx.lineTo(x, y + h); ctx.closePath(); break;
+    }
+    case 'heart': {
+      const s = Math.min(w, h) / 2;
+      ctx.save(); ctx.translate(cx, cy + s * 0.1);
+      ctx.scale(w / (s * 2.4), h / (s * 2.4));
+      ctx.moveTo(0, s * 0.6);
+      ctx.bezierCurveTo(-s * 1.2, -s * 0.4, -s * 2, s * 0.8, 0, s * 1.8);
+      ctx.bezierCurveTo(s * 2, s * 0.8, s * 1.2, -s * 0.4, 0, s * 0.6);
+      ctx.restore(); break;
+    }
+    case 'cloud': {
+      const bw = w * 0.2, bh = h * 0.4;
+      ctx.arc(x + bw * 1.5, y + h * 0.55, bw, 0, Math.PI * 2);
+      ctx.arc(x + bw * 3,   y + h * 0.45, bw * 1.3, 0, Math.PI * 2);
+      ctx.arc(x + bw * 4.5, y + h * 0.5,  bw * 1.1, 0, Math.PI * 2);
+      ctx.arc(cx,            y + h * 0.35, bw * 1.5, 0, Math.PI * 2);
+      ctx.rect(x + bw, y + h * 0.5, w - bw * 2, h * 0.4); break;
+    }
+    case 'speech': {
+      const tailH = h * 0.2, mainH = h - tailH;
+      const r2 = Math.min(12, w * 0.1, mainH * 0.2);
+      ctx.moveTo(x + r2, y); ctx.lineTo(x + w - r2, y);
+      ctx.arcTo(x + w, y, x + w, y + r2, r2);
+      ctx.lineTo(x + w, y + mainH - r2);
+      ctx.arcTo(x + w, y + mainH, x + w - r2, y + mainH, r2);
+      ctx.lineTo(x + w * 0.4, y + mainH);
+      ctx.lineTo(x + w * 0.2, y + mainH + tailH);
+      ctx.lineTo(x + w * 0.3, y + mainH);
+      ctx.lineTo(x + r2, y + mainH);
+      ctx.arcTo(x, y + mainH, x, y + mainH - r2, r2);
+      ctx.lineTo(x, y + r2); ctx.arcTo(x, y, x + r2, y, r2);
+      ctx.closePath(); break;
+    }
+    default:
+      ctx.rect(x, y, w, h);
+  }
+}
+
+// ===== RENDER ONE OBJECT =====
+function drawObject(ctx, obj, isSelected) {
+  ctx.save();
+  // Rotation
+  const cx = obj.x + obj.w / 2, cy = obj.y + obj.h / 2;
+  ctx.translate(cx, cy);
+  ctx.rotate((obj.rotation || 0) * Math.PI / 180);
+  ctx.translate(-cx, -cy);
+  // Opacity
+  ctx.globalAlpha = obj.opacity != null ? obj.opacity : 1;
+
+  if (obj.type === 'text') {
+    // Text object
+    const fontSize = obj.fontSize || 18;
+    let fontStr = '';
+    if (obj.italic)  fontStr += 'italic ';
+    if (obj.bold)    fontStr += 'bold ';
+    fontStr += fontSize + 'px ' + (obj.fontFamily || "'Noto Sans', sans-serif");
+    ctx.font = fontStr;
+    ctx.textAlign = obj.textAlign || 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = obj.textColor || '#1a1a2e';
+    const lines = (obj.text || 'Văn bản').split('\n');
+    const lineH = fontSize * 1.3;
+    lines.forEach((line, i) => {
+      const tx = obj.textAlign === 'center' ? obj.x + obj.w / 2 :
+                 obj.textAlign === 'right'  ? obj.x + obj.w : obj.x + 4;
+      ctx.fillText(line, tx, obj.y + 4 + i * lineH);
+    });
+    if (obj.underline) {
+      ctx.strokeStyle = obj.textColor || '#1a1a2e';
+      ctx.lineWidth = 1;
+      lines.forEach((line, i) => {
+        const tw = ctx.measureText(line).width;
+        const tx = obj.textAlign === 'center' ? obj.x + obj.w / 2 - tw / 2 :
+                   obj.textAlign === 'right'  ? obj.x + obj.w - tw : obj.x + 4;
+        const ty = obj.y + 4 + i * lineH + fontSize + 1;
+        ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(tx + tw, ty); ctx.stroke();
+      });
+    }
+    // Dashed selection border for text
+    if (isSelected) {
+      ctx.globalAlpha = 1;
+      ctx.setLineDash([4, 3]);
+      ctx.strokeStyle = '#3B82F6';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(obj.x - 2, obj.y - 2, obj.w + 4, obj.h + 4);
+      ctx.setLineDash([]);
+    }
+  } else {
+    // Shape
+    applyShapePath(ctx, obj);
+    if (obj.fill && obj.fill !== 'transparent') {
+      ctx.fillStyle = obj.fill;
+      ctx.fill();
+    }
+    if (obj.stroke && obj.stroke !== 'transparent') {
+      ctx.strokeStyle = obj.stroke;
+      ctx.lineWidth = obj.strokeWidth != null ? obj.strokeWidth : 2;
+      ctx.stroke();
+    }
+    // Label text inside shape
+    if (obj.text) {
+      const fontSize = obj.fontSize || 14;
+      let fontStr = '';
+      if (obj.italic)  fontStr += 'italic ';
+      if (obj.bold)    fontStr += 'bold ';
+      fontStr += fontSize + 'px ' + (obj.fontFamily || "'Noto Sans', sans-serif");
+      ctx.font = fontStr;
+      ctx.textAlign = obj.textAlign || 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = obj.textColor || '#ffffff';
+      ctx.fillText(obj.text, obj.x + obj.w / 2, obj.y + obj.h / 2);
+    }
+  }
+
+  // Selection handles
+  if (isSelected) {
+    ctx.globalAlpha = 1;
+    // Selection outline
+    ctx.setLineDash([5, 3]);
+    ctx.strokeStyle = '#3B82F6';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(obj.x - 3, obj.y - 3, obj.w + 6, obj.h + 6);
+    ctx.setLineDash([]);
+    // Corner handles
+    const handles = [
+      [obj.x - 3, obj.y - 3], [obj.x + obj.w / 2 - 4, obj.y - 3],
+      [obj.x + obj.w + 3 - 8, obj.y - 3],
+      [obj.x - 3, obj.y + obj.h / 2 - 4], [obj.x + obj.w + 3 - 8, obj.y + obj.h / 2 - 4],
+      [obj.x - 3, obj.y + obj.h + 3 - 8], [obj.x + obj.w / 2 - 4, obj.y + obj.h + 3 - 8],
+      [obj.x + obj.w + 3 - 8, obj.y + obj.h + 3 - 8] // bottom-right = resize
+    ];
+    handles.forEach(([hx, hy], idx) => {
+      ctx.fillStyle = '#3B82F6'; ctx.strokeStyle = 'white'; ctx.lineWidth = 1.5;
+      if (idx === 7) { ctx.fillStyle = '#EF4444'; } // resize handle = red
+      ctx.beginPath(); ctx.rect(hx, hy, 8, 8); ctx.fill(); ctx.stroke();
+    });
+  }
+
+  ctx.restore();
+}
+
+// ===== REDRAW =====
+function redrawCanvas() {
+  const ctx = getCtx();
+  ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+  editorObjects.forEach(obj => drawObject(ctx, obj, obj.id === selectedId));
+  // Draw in-progress shape
+  if (isDrawing && currentTool !== 'select' && currentTool !== 'text') {
+    drawPreviewShape(ctx);
+  }
+}
+
+function drawPreviewShape(ctx) {
+  const { x, y, w, h } = getDrawRect();
+  if (Math.abs(w) < 2 && Math.abs(h) < 2) return;
+  const previewFill = document.getElementById('prop-fill').value;
+  const previewStroke = document.getElementById('prop-stroke').value;
+  const previewSW = parseInt(document.getElementById('prop-strokew').value);
+  const previewObj = { type: currentTool, x: Math.min(x, x+w), y: Math.min(y, y+h), w: Math.abs(w), h: Math.abs(h), fill: previewFill, stroke: previewStroke, strokeWidth: previewSW, borderRadius: 0, opacity: 0.7 };
+  ctx.save(); ctx.globalAlpha = 0.7;
+  applyShapePath(ctx, previewObj);
+  if (previewFill !== 'transparent') { ctx.fillStyle = previewFill; ctx.fill(); }
+  ctx.strokeStyle = previewStroke; ctx.lineWidth = previewSW || 2; ctx.stroke();
+  ctx.restore();
+}
+
+// ===== MOUSE EVENTS =====
+let mousePos = { x: 0, y: 0 };
+function getDrawRect() {
+  return { x: drawStart.x, y: drawStart.y, w: mousePos.x - drawStart.x, h: mousePos.y - drawStart.y };
+}
+
+function canvasMouseDown(e) {
+  const pos = screenToCanvas(e);
+  mousePos = pos;
+
+  if (currentTool === 'select') {
+    const obj = findTopObject(pos.x, pos.y);
+    if (obj) {
+      // Check resize handle
+      if (selectedId === obj.id && resizeHandleHit(obj, pos.x, pos.y)) {
+        dragState = { type: 'resize', startX: pos.x, startY: pos.y, origObj: JSON.parse(JSON.stringify(obj)) };
+      } else {
+        dragState = { type: 'move', startX: pos.x, startY: pos.y, origObj: JSON.parse(JSON.stringify(obj)) };
+        selectedId = obj.id;
+        updateProps();
+      }
+    } else {
+      selectedId = null; updateProps();
+    }
+    redrawCanvas();
+    return;
+  }
+
+  if (currentTool === 'text') return; // handled by click
+
+  // Shape drawing
+  isDrawing = true;
+  drawStart = { x: pos.x, y: pos.y };
+}
+
+function canvasMouseMove(e) {
+  const pos = screenToCanvas(e);
+  mousePos = pos;
+
+  if (dragState) {
+    const obj = editorObjects.find(o => o.id === selectedId);
+    if (!obj) return;
+    const dx = pos.x - dragState.startX, dy = pos.y - dragState.startY;
+    if (dragState.type === 'move') {
+      obj.x = dragState.origObj.x + dx;
+      obj.y = dragState.origObj.y + dy;
+    } else {
+      obj.w = Math.max(10, dragState.origObj.w + dx);
+      obj.h = Math.max(10, dragState.origObj.h + dy);
+    }
+    redrawCanvas(); updatePropsXY(obj);
+    return;
+  }
+
+  if (isDrawing) redrawCanvas();
+}
+
+function canvasMouseUp(e) {
+  if (dragState) {
+    pushUndo(); dragState = null; return;
+  }
+  if (!isDrawing) return;
+  isDrawing = false;
+  const pos = screenToCanvas(e);
+  const rx = Math.min(drawStart.x, pos.x), ry = Math.min(drawStart.y, pos.y);
+  const rw = Math.abs(pos.x - drawStart.x), rh = Math.abs(pos.y - drawStart.y);
+  if (rw < 5 && rh < 5) { redrawCanvas(); return; }
+
+  pushUndo();
+  const newObj = {
+    id: objIdCounter++,
+    type: currentTool,
+    x: rx, y: ry,
+    w: rw || 100, h: rh || 100,
+    fill: document.getElementById('prop-fill').value,
+    stroke: document.getElementById('prop-stroke').value,
+    strokeWidth: parseInt(document.getElementById('prop-strokew').value) || 2,
+    opacity: parseInt(document.getElementById('prop-opacity').value) / 100,
+    rotation: 0, borderRadius: parseInt(document.getElementById('prop-radius').value) || 0,
+    text: '', fontFamily: document.getElementById('prop-font').value,
+    fontSize: parseInt(document.getElementById('prop-fontsize').value) || 18,
+    textColor: document.getElementById('prop-textcolor').value,
+    bold: document.getElementById('btn-bold').classList.contains('active'),
+    italic: document.getElementById('btn-italic').classList.contains('active'),
+    underline: document.getElementById('btn-underline').classList.contains('active'),
+    textAlign: 'center',
+  };
+  editorObjects.push(newObj);
+  selectedId = newObj.id;
+  redrawCanvas(); updateProps();
+}
+
+function canvasClick(e) {
+  if (currentTool !== 'text') return;
+  const pos = screenToCanvas(e);
+  pushUndo();
+  const newText = {
+    id: objIdCounter++, type: 'text',
+    x: pos.x - 80, y: pos.y - 14,
+    w: 200, h: 40,
+    text: 'Văn bản mới',
+    fontFamily: document.getElementById('prop-font').value,
+    fontSize: parseInt(document.getElementById('prop-fontsize').value) || 18,
+    textColor: document.getElementById('prop-textcolor').value,
+    bold: document.getElementById('btn-bold').classList.contains('active'),
+    italic: document.getElementById('btn-italic').classList.contains('active'),
+    underline: document.getElementById('btn-underline').classList.contains('active'),
+    textAlign: 'left', opacity: 1, rotation: 0,
+    fill: 'transparent', stroke: 'transparent', strokeWidth: 0, borderRadius: 0,
+  };
+  editorObjects.push(newText);
+  selectedId = newText.id;
+  redrawCanvas(); updateProps();
+}
+
+function canvasDblClick(e) {
+  // Double-click on text object to edit inline
+  const pos = screenToCanvas(e);
+  const obj = findTopObject(pos.x, pos.y);
+  if (obj && obj.type === 'text') {
+    const txt = document.getElementById('prop-text');
+    if (txt) { txt.value = obj.text || ''; txt.focus(); txt.select(); }
+  }
+}
+
+// ===== PROPERTIES PANEL =====
+function getSelected() { return editorObjects.find(o => o.id === selectedId) || null; }
+
+function applyProp(key, value) {
+  const obj = getSelected();
+  if (!obj) return;
+  pushUndo();
+  obj[key] = value;
+  // Sync hex fields
+  if (key === 'fill')      { document.getElementById('prop-fill').value = value === 'transparent' ? '#ffffff' : value; document.getElementById('prop-fill-hex').value = value; }
+  if (key === 'stroke')    { document.getElementById('prop-stroke').value = value === 'transparent' ? '#ffffff' : value; document.getElementById('prop-stroke-hex').value = value; }
+  if (key === 'textColor') { document.getElementById('prop-textcolor').value = value; document.getElementById('prop-textcolor-hex').value = value; }
+  redrawCanvas();
+}
+
+function applyPropXY(key, value) {
+  const obj = getSelected();
+  if (!obj || isNaN(value)) return;
+  pushUndo();
+  obj[key] = value;
+  redrawCanvas();
+}
+
+function toggleTextStyle(style) {
+  const obj = getSelected();
+  const btn = document.getElementById('btn-' + style);
+  const newVal = !btn.classList.contains('active');
+  btn.classList.toggle('active', newVal);
+  if (obj) { pushUndo(); obj[style] = newVal; redrawCanvas(); }
+}
+
+function updateProps() {
+  const obj = getSelected();
+  if (!obj) {
+    // Clear / disable
+    return;
+  }
+  const s = v => v != null ? v : '';
+  const setV = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+
+  setV('prop-fill', obj.fill && obj.fill !== 'transparent' ? obj.fill : '#4F86F7');
+  setV('prop-fill-hex', obj.fill || 'transparent');
+  setV('prop-stroke', obj.stroke && obj.stroke !== 'transparent' ? obj.stroke : '#1a1a2e');
+  setV('prop-stroke-hex', obj.stroke || 'transparent');
+  setV('prop-strokew', obj.strokeWidth != null ? obj.strokeWidth : 2);
+  document.getElementById('prop-strokew-val').textContent = (obj.strokeWidth != null ? obj.strokeWidth : 2) + 'px';
+  setV('prop-opacity', Math.round((obj.opacity != null ? obj.opacity : 1) * 100));
+  document.getElementById('prop-opacity-val').textContent = Math.round((obj.opacity != null ? obj.opacity : 1) * 100) + '%';
+  setV('prop-text', obj.text || '');
+  setV('prop-font', obj.fontFamily || "'Noto Sans', sans-serif");
+  setV('prop-fontsize', obj.fontSize || 18);
+  document.getElementById('prop-fontsize-val').textContent = (obj.fontSize || 18) + 'px';
+  setV('prop-textcolor', obj.textColor || '#1a1a2e');
+  setV('prop-textcolor-hex', obj.textColor || '#1a1a2e');
+  setV('prop-rotation', obj.rotation || 0);
+  document.getElementById('prop-rotation-val').textContent = (obj.rotation || 0) + '°';
+  setV('prop-radius', obj.borderRadius || 0);
+  document.getElementById('prop-radius-val').textContent = (obj.borderRadius || 0) + 'px';
+  document.getElementById('btn-bold').classList.toggle('active', !!obj.bold);
+  document.getElementById('btn-italic').classList.toggle('active', !!obj.italic);
+  document.getElementById('btn-underline').classList.toggle('active', !!obj.underline);
+  updatePropsXY(obj);
+}
+
+function updatePropsXY(obj) {
+  const setV = (id, val) => { const el = document.getElementById(id); if (el) el.value = Math.round(val); };
+  setV('prop-x', obj.x); setV('prop-y', obj.y);
+  setV('prop-w', obj.w); setV('prop-h', obj.h);
+}
+
+// ===== LAYER OPS =====
+function bringForward() {
+  const idx = editorObjects.findIndex(o => o.id === selectedId);
+  if (idx < editorObjects.length - 1) { pushUndo(); [editorObjects[idx], editorObjects[idx+1]] = [editorObjects[idx+1], editorObjects[idx]]; redrawCanvas(); }
+}
+function sendBackward() {
+  const idx = editorObjects.findIndex(o => o.id === selectedId);
+  if (idx > 0) { pushUndo(); [editorObjects[idx], editorObjects[idx-1]] = [editorObjects[idx-1], editorObjects[idx]]; redrawCanvas(); }
+}
+
+// ===== DELETE =====
+function deleteSelected() {
+  if (!selectedId) return;
+  pushUndo();
+  editorObjects = editorObjects.filter(o => o.id !== selectedId);
+  selectedId = null; redrawCanvas(); updateProps();
+}
+function clearAll() {
+  if (!confirm('Xóa toàn bộ đối tượng trên canvas?')) return;
+  pushUndo(); editorObjects = []; selectedId = null; redrawCanvas();
+}
+
+// ===== KEYBOARD =====
+document.addEventListener('keydown', e => {
+  // Only when editor page is visible
+  if (document.getElementById('page-editor').style.display === 'none') return;
+  if (e.ctrlKey && e.key === 'z') { e.preventDefault(); editorUndo(); }
+  if (e.ctrlKey && e.key === 'y') { e.preventDefault(); editorRedo(); }
+  if ((e.key === 'Delete' || e.key === 'Backspace') && selectedId && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+    e.preventDefault(); deleteSelected();
+  }
+  // Tool shortcuts
+  const shortcuts = { v: 'select', t: 'text', r: 'rect', c: 'circle' };
+  if (!e.ctrlKey && shortcuts[e.key] && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+    setTool(shortcuts[e.key]);
+  }
+});
+
+// ===== EXPORT =====
+function exportEditorPNG() {
+  const c = getCanvas();
+  selectedId = null; redrawCanvas();
+  const link = document.createElement('a');
+  link.download = 'pdf-editor-export.png';
+  link.href = c.toDataURL('image/png');
+  link.click();
+}
+
+async function exportEditorPDF() {
+  selectedId = null; redrawCanvas();
+  await new Promise(r => setTimeout(r, 100));
+  const c = getCanvas();
+  const imgData = c.toDataURL('image/jpeg', 0.97);
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+  pdf.save('pdf-editor-export.pdf');
+  showSnackbar('✅ Đã xuất PDF thành công!');
+}
+
+// Init canvas
+document.addEventListener('DOMContentLoaded', () => {
+  setZoom(1);
+  redrawCanvas();
+});
 </script>
 </body>
 </html>

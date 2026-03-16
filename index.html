@@ -1,461 +1,1064 @@
 <!DOCTYPE html>
-<html lang="vi" data-theme="dark">
+<html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Minh's Store – Dien Tu Cao Cap</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>HWAssist – Học Tập Trực Tuyến</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--surface:#13131c;--line:rgba(255,255,255,0.07);--hi:#00e5ff;--hi2:#7c3aed;--hi3:#f59e0b;--tx:#f0f0ff;--tx2:#8888aa;--tx3:#555577;--glow:0 0 30px rgba(0,229,255,0.15);--nh:72px}
-[data-theme="light"]{--bg:#f0f2f8;--bg2:#e8eaf4;--bg3:#dde0f0;--surface:#ffffff;--line:rgba(0,0,0,0.08);--tx:#0d0d1a;--tx2:#4a4a6a;--tx3:#9090b0;--glow:0 0 30px rgba(0,100,200,0.12)}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);transition:background .4s,color .4s;overflow-x:hidden}
-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nh);display:flex;align-items:center;justify-content:space-between;padding:0 5%;background:rgba(10,10,15,.75);backdrop-filter:blur(20px);border-bottom:1px solid var(--line);transition:background .4s}
-[data-theme="light"] nav{background:rgba(240,242,248,.85)}
-.logo{display:flex;align-items:center;gap:10px;text-decoration:none;cursor:pointer}
-.logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--hi),var(--hi2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;color:#fff;font-size:18px;box-shadow:0 0 16px rgba(0,229,255,.35)}
-.logo-text{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--tx);letter-spacing:-.5px}
-.logo-text span{color:var(--hi)}
-.nav-links{display:flex;gap:32px;list-style:none}
-.nav-links a{text-decoration:none;color:var(--tx2);font-size:14px;font-weight:500;letter-spacing:.5px;transition:color .2s}
-.nav-links a:hover{color:var(--hi)}
-.nav-right{display:flex;align-items:center;gap:16px}
-.tog{position:relative;width:56px;height:28px;background:var(--bg3);border:1px solid var(--line);border-radius:14px;cursor:pointer;transition:background .3s}
-.tog::before{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:linear-gradient(135deg,var(--hi),var(--hi2));border-radius:50%;transition:transform .3s}
-[data-theme="light"] .tog::before{transform:translateX(28px)}
-.tog-icon{position:absolute;top:50%;transform:translateY(-50%);font-size:11px;pointer-events:none}
-.tog-icon.a{left:6px}.tog-icon.b{right:6px}
-#intro{position:fixed;inset:0;z-index:200;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;transition:opacity .8s,visibility .8s}
-#intro.gone{opacity:0;visibility:hidden}
-.ilogo{width:90px;height:90px;background:linear-gradient(135deg,var(--hi),var(--hi2));border-radius:22px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;color:#fff;font-size:38px;box-shadow:0 0 60px rgba(0,229,255,.4);margin-bottom:28px;animation:glow 2s infinite}
-@keyframes glow{0%,100%{box-shadow:0 0 40px rgba(0,229,255,.4)}50%{box-shadow:0 0 80px rgba(0,229,255,.7)}}
-.ititle{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(36px,6vw,68px);line-height:1.1;margin-bottom:16px;background:linear-gradient(90deg,var(--hi),var(--hi2),var(--hi3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.isub{font-size:17px;color:var(--tx2);max-width:440px;line-height:1.65;margin-bottom:40px}
-.itags{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:48px}
-.itag{padding:6px 16px;border-radius:99px;border:1px solid var(--line);font-size:13px;color:var(--tx2);background:var(--bg3)}
-.ibtn{padding:14px 44px;background:linear-gradient(135deg,var(--hi),var(--hi2));border:none;border-radius:12px;color:#fff;font-family:'Syne',sans-serif;font-size:16px;font-weight:700;cursor:pointer;letter-spacing:.5px;box-shadow:0 8px 32px rgba(0,229,255,.3);transition:transform .2s,box-shadow .2s}
-.ibtn:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,229,255,.45)}
-main{padding-top:var(--nh)}
-.hero{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 5% 60px;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(0,229,255,.1) 0%,transparent 70%),radial-gradient(ellipse 50% 40% at 80% 100%,rgba(124,58,237,.12) 0%,transparent 60%);pointer-events:none}
-.htag{display:inline-block;margin-bottom:20px;padding:6px 18px;border-radius:99px;border:1px solid rgba(0,229,255,.3);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--hi);font-family:'Space Mono',monospace}
-.hero h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(32px,5.5vw,72px);line-height:1.1;letter-spacing:-1px;margin-bottom:20px}
-.hero h1 .g{background:linear-gradient(90deg,var(--hi),var(--hi2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero p{font-size:17px;color:var(--tx2);max-width:520px;line-height:1.7;margin-bottom:36px}
-.hbtns{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
-.bp{padding:13px 36px;border-radius:10px;background:linear-gradient(135deg,var(--hi),#0077cc);border:none;color:#fff;font-weight:600;font-size:15px;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 20px rgba(0,229,255,.25);text-decoration:none}
-.bp:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,229,255,.4)}
-.bg{padding:13px 36px;border-radius:10px;background:transparent;border:1px solid var(--line);color:var(--tx);font-weight:500;font-size:15px;cursor:pointer;transition:background .2s,border-color .2s;text-decoration:none;display:inline-block}
-.bg:hover{background:var(--bg3);border-color:var(--hi)}
-.sec{padding:60px 5%}
-.sec-hd{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:36px;flex-wrap:wrap;gap:16px}
-.sec-lbl{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--hi);margin-bottom:8px}
-.sec-ttl{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(24px,3vw,36px);line-height:1.2}
-.filters{display:flex;gap:10px;flex-wrap:wrap}
-.fb{padding:8px 20px;border-radius:8px;background:var(--bg3);border:1px solid var(--line);color:var(--tx2);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
-.fb:hover,.fb.on{background:var(--hi);color:#000;border-color:var(--hi);font-weight:700}
-.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:24px}
-.pc{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;cursor:pointer;transition:transform .3s,box-shadow .3s,border-color .3s;position:relative;animation:fu .5s ease both}
-@keyframes fu{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-.pc:hover{transform:translateY(-6px);box-shadow:0 20px 50px rgba(0,0,0,.35),var(--glow);border-color:rgba(0,229,255,.3)}
-.bdg{position:absolute;top:12px;left:12px;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;z-index:2}
-.bn{background:var(--hi);color:#000}
-.bh{background:#ef4444;color:#fff}
-.bs{background:var(--hi3);color:#000}
-.pimgw{height:200px;background:var(--bg3);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
-.pimgw::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(0,229,255,.06) 0%,transparent 70%)}
-.pem{font-size:90px;line-height:1;filter:drop-shadow(0 8px 24px rgba(0,0,0,.4));transition:transform .4s;user-select:none}
-.pc:hover .pem{transform:scale(1.08) translateY(-4px)}
-.pinfo{padding:18px}
-.pbrand{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--hi);font-family:'Space Mono',monospace;margin-bottom:6px}
-.pname{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;line-height:1.3;margin-bottom:6px;color:var(--tx)}
-.pspec{font-size:12px;color:var(--tx2);margin-bottom:14px;line-height:1.5}
-.pbot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
-.pprice{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--tx)}
-.ppold{font-size:12px;color:var(--tx3);text-decoration:line-through;margin-left:6px}
-.badd{padding:7px 16px;border-radius:8px;background:linear-gradient(135deg,var(--hi),#0099cc);border:none;color:#000;font-weight:700;font-size:12px;cursor:pointer;transition:transform .15s,box-shadow .15s;white-space:nowrap}
-.badd:hover{transform:scale(1.05);box-shadow:0 4px 14px rgba(0,229,255,.35)}
-.mqs{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:18px 0;overflow:hidden}
-.mqt{display:flex;gap:60px;animation:mq 18s linear infinite;white-space:nowrap}
-.mqt:hover{animation-play-state:paused}
-@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.mqi{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--tx2);font-weight:500}
-.mqi span{font-size:18px}
-footer{border-top:1px solid var(--line);padding:48px 5% 32px;display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px}
-@media(max-width:640px){footer{grid-template-columns:1fr}}
-.fbrand p{color:var(--tx2);font-size:14px;line-height:1.7;margin-top:12px;max-width:300px}
-.fcol h4{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:14px}
-.fcol ul{list-style:none}
-.fcol ul li{margin-bottom:8px}
-.fcol ul li a{text-decoration:none;color:var(--tx2);font-size:13px;transition:color .2s}
-.fcol ul li a:hover{color:var(--hi)}
-.fbot{padding:20px 5%;text-align:center;font-size:12px;color:var(--tx3);border-top:1px solid var(--line)}
-::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:3px}
-#toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);background:linear-gradient(135deg,var(--hi),var(--hi2));color:#fff;padding:12px 28px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.3);transition:transform .35s cubic-bezier(.34,1.56,.64,1);z-index:300;pointer-events:none;white-space:nowrap}
-#toast.show{transform:translateX(-50%) translateY(0)}
+/* ══════════════════════════════════════════
+   VARIABLES & RESET
+══════════════════════════════════════════ */
+:root {
+  --red:#f53b57; --red2:#ff6b81; --salmon:#ff8fa3;
+  --dark2:#131315;
+  --card:rgba(255,255,255,0.06);
+  --glass:rgba(255,255,255,0.09);
+  --border:rgba(255,255,255,0.10);
+  --text:#fff; --muted:rgba(255,255,255,0.52);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Be Vietnam Pro',sans-serif;
+  background:var(--dark2);
+  color:var(--text);
+  overflow-x:hidden;
+  cursor:none;
+}
+
+/* ══════════════════════════════════════════
+   CURSOR
+══════════════════════════════════════════ */
+.cursor{position:fixed;inset:0;z-index:9999;pointer-events:none;}
+.cursor-dot{width:7px;height:7px;border-radius:50%;background:var(--red);position:absolute;transform:translate(-50%,-50%);}
+.cursor-ring{width:34px;height:34px;border-radius:50%;border:1.5px solid rgba(245,59,87,.5);position:absolute;transform:translate(-50%,-50%);transition:width .18s,height .18s,border-color .18s;}
+
+/* ══════════════════════════════════════════
+   ANIMATED BACKGROUND
+══════════════════════════════════════════ */
+.bg-canvas{position:fixed;inset:0;z-index:0;background:var(--dark2);overflow:hidden;}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);animation:drift linear infinite;will-change:transform;}
+.orb-1{width:700px;height:700px;background:radial-gradient(circle,rgba(245,59,87,.28),transparent 68%);top:-200px;left:-180px;animation-duration:20s;}
+.orb-2{width:500px;height:500px;background:radial-gradient(circle,rgba(255,107,129,.22),transparent 68%);top:30%;right:-120px;animation-duration:25s;animation-delay:-7s;}
+.orb-3{width:380px;height:380px;background:radial-gradient(circle,rgba(255,143,163,.18),transparent 68%);bottom:-80px;left:28%;animation-duration:17s;animation-delay:-11s;}
+.orb-4{width:320px;height:320px;background:radial-gradient(circle,rgba(192,57,43,.22),transparent 68%);top:15%;left:55%;animation-duration:22s;animation-delay:-4s;}
+@keyframes drift{
+  0%  {transform:translateY(0)translateX(0)scale(1);}
+  25% {transform:translateY(-45px)translateX(35px)scale(1.04);}
+  50% {transform:translateY(22px)translateX(-22px)scale(.97);}
+  75% {transform:translateY(-28px)translateX(-38px)scale(1.03);}
+  100%{transform:translateY(0)translateX(0)scale(1);}
+}
+.hover-glow{
+  position:fixed;z-index:1;
+  width:420px;height:420px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,107,129,.14),transparent 70%);
+  filter:blur(45px);pointer-events:none;
+  transform:translate(-50%,-50%);
+  transition:opacity .35s;opacity:0;
+}
+
+/* ══════════════════════════════════════════
+   NAVBAR
+══════════════════════════════════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  height:66px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 clamp(24px,5vw,80px);
+  background:rgba(19,19,21,.65);
+  backdrop-filter:blur(22px);
+  border-bottom:1px solid var(--border);
+  transition:background .35s;
+}
+nav.scrolled{background:rgba(13,13,15,.9);}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo-img{
+  width:32px;height:32px;
+  border-radius:8px;
+  object-fit:contain;          /* ← contain so logo không bị crop */
+  background:rgba(245,59,87,.12);
+  padding:2px;
+  box-shadow:0 0 0 1.5px rgba(245,59,87,.45);
+}
+.nav-logo-text{
+  font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;
+  background:linear-gradient(130deg,#fff 40%,var(--red2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.nav-links{display:flex;align-items:center;gap:4px;list-style:none;}
+.nav-links a{
+  color:var(--muted);text-decoration:none;
+  font-size:.85rem;font-weight:500;
+  padding:7px 14px;border-radius:8px;
+  transition:color .2s,background .2s;
+}
+.nav-links a:hover,.nav-links a.active{color:#fff;background:var(--glass);}
+.nav-links a.cta{
+  background:linear-gradient(135deg,var(--red),var(--red2));
+  color:#fff!important;font-weight:700;
+  padding:7px 20px;
+  box-shadow:0 4px 18px rgba(245,59,87,.38);
+  transition:transform .2s,box-shadow .2s;
+}
+.nav-links a.cta:hover{transform:translateY(-1px);box-shadow:0 8px 26px rgba(245,59,87,.55);}
+
+/* ══════════════════════════════════════════
+   PAGE WRAPPER
+══════════════════════════════════════════ */
+.page-wrap{
+  max-width:1280px;
+  margin:0 auto;
+  padding:0 clamp(20px,5vw,80px);
+  position:relative;z-index:2;
+}
+
+/* ══════════════════════════════════════════
+   HERO — HORIZONTAL
+══════════════════════════════════════════ */
+#intro{
+  min-height:100vh;
+  display:flex;align-items:center;
+  padding-top:66px;
+}
+.hero-layout{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:60px;
+  align-items:center;
+  width:100%;
+  padding:60px 0 80px;
+}
+
+/* LEFT: text */
+.hero-text-col{}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(245,59,87,.1);
+  border:1px solid rgba(245,59,87,.28);
+  border-radius:100px;padding:5px 14px;
+  font-size:.72rem;font-weight:700;color:var(--red2);
+  letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:26px;
+  animation:fadeUp .55s ease both;
+}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--red);animation:blink 1.6s ease infinite;}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
+
+h1.hero-title{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(2.4rem,4.2vw,3.8rem);
+  font-weight:800;line-height:1.08;
+  letter-spacing:-.025em;
+  margin-bottom:20px;
+  animation:fadeUp .55s .08s ease both;
+}
+.hero-title .line2{
+  background:linear-gradient(130deg,var(--red),var(--salmon));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  display:block;
+}
+.hero-sub{
+  font-size:1rem;color:var(--muted);
+  line-height:1.8;max-width:460px;
+  margin-bottom:38px;
+  animation:fadeUp .55s .16s ease both;
+}
+.hero-actions{
+  display:flex;gap:12px;flex-wrap:wrap;
+  animation:fadeUp .55s .24s ease both;
+}
+.btn-primary{
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--red),var(--red2));
+  color:#fff;font-family:'Be Vietnam Pro',sans-serif;
+  font-size:.92rem;font-weight:700;
+  padding:13px 28px;border-radius:12px;
+  text-decoration:none;border:none;cursor:none;
+  box-shadow:0 8px 28px rgba(245,59,87,.4);
+  transition:transform .22s,box-shadow .22s;
+  position:relative;overflow:hidden;
+}
+.btn-primary::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.16),transparent);opacity:0;transition:opacity .2s;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 38px rgba(245,59,87,.52);}
+.btn-primary:hover::before{opacity:1;}
+.arrow{transition:transform .2s;}
+.btn-primary:hover .arrow{transform:translateX(4px);}
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--glass);border:1px solid var(--border);
+  color:#fff;font-family:'Be Vietnam Pro',sans-serif;
+  font-size:.92rem;font-weight:600;
+  padding:13px 26px;border-radius:12px;
+  text-decoration:none;cursor:none;
+  backdrop-filter:blur(10px);
+  transition:background .2s,border-color .2s,transform .2s;
+}
+.btn-ghost:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.22);transform:translateY(-2px);}
+
+/* RIGHT: visual card */
+.hero-visual-col{
+  display:flex;justify-content:center;align-items:center;
+  animation:fadeUp .55s .1s ease both;
+}
+.hero-card{
+  position:relative;
+  width:100%;max-width:420px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:28px;
+  padding:36px 32px 32px;
+  backdrop-filter:blur(18px);
+  box-shadow:0 24px 80px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.08);
+  overflow:hidden;
+}
+.hero-card::before{
+  content:'';position:absolute;inset:0;border-radius:28px;
+  background:radial-gradient(ellipse at 60% 0%,rgba(245,59,87,.15),transparent 65%);
+  pointer-events:none;
+}
+.hcard-logo-wrap{
+  display:flex;align-items:center;gap:14px;margin-bottom:28px;
+}
+.hcard-logo{
+  width:64px;height:64px;
+  border-radius:16px;
+  object-fit:contain;           /* ← contain, không crop */
+  background:rgba(245,59,87,.1);
+  padding:4px;
+  border:1px solid rgba(245,59,87,.3);
+  box-shadow:0 8px 28px rgba(245,59,87,.25);
+  animation:logoFloat 3.5s ease-in-out infinite;
+}
+@keyframes logoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.hcard-label{}
+.hcard-name{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;}
+.hcard-class{font-size:.78rem;color:var(--muted);margin-top:3px;}
+
+.hcard-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px;}
+.hstat{
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--border);
+  border-radius:14px;padding:14px 16px;
+  transition:border-color .2s;
+}
+.hstat:hover{border-color:rgba(245,59,87,.35);}
+.hstat-n{font-family:'Syne',sans-serif;font-size:1.45rem;font-weight:800;background:linear-gradient(135deg,#fff,var(--red2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;}
+.hstat-l{font-size:.72rem;color:var(--muted);margin-top:4px;}
+
+.hcard-btn{
+  width:100%;padding:12px;border-radius:12px;border:none;
+  background:linear-gradient(135deg,var(--red),var(--red2));
+  color:#fff;font-family:'Be Vietnam Pro',sans-serif;
+  font-size:.9rem;font-weight:700;cursor:none;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  box-shadow:0 6px 22px rgba(245,59,87,.38);
+  transition:transform .2s,box-shadow .2s;
+}
+.hcard-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(245,59,87,.52);}
+
+/* floating tags on card */
+.hcard-tag{
+  position:absolute;
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(28,28,30,.85);
+  border:1px solid var(--border);
+  border-radius:100px;padding:5px 12px;
+  font-size:.72rem;font-weight:600;
+  backdrop-filter:blur(8px);
+  white-space:nowrap;
+}
+.hcard-tag.t1{top:16px;right:16px;color:#34d399;border-color:rgba(52,211,153,.3);}
+.hcard-tag.t1::before{content:'';width:5px;height:5px;border-radius:50%;background:#34d399;animation:blink 1.5s ease infinite;}
+.hcard-tag.t2{bottom:90px;right:-12px;color:#fbbf24;border-color:rgba(251,191,36,.3);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══════════════════════════════════════════
+   DIVIDER
+══════════════════════════════════════════ */
+.section-divider{
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--border),transparent);
+  margin:0 auto;max-width:1280px;
+  padding:0 clamp(20px,5vw,80px);
+}
+
+/* ══════════════════════════════════════════
+   STATS ROW (separate section, horizontal)
+══════════════════════════════════════════ */
+.stats-section{padding:60px 0;}
+.stats-inner{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+.stat-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:18px;padding:28px 22px;
+  text-align:center;backdrop-filter:blur(12px);
+  transition:transform .25s,border-color .25s,box-shadow .25s;
+}
+.stat-card:hover{transform:translateY(-4px);border-color:rgba(245,59,87,.4);box-shadow:0 12px 36px rgba(245,59,87,.13);}
+.stat-num{font-family:'Syne',sans-serif;font-size:2.1rem;font-weight:800;background:linear-gradient(135deg,#fff,var(--red2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;}
+.stat-label{font-size:.78rem;color:var(--muted);margin-top:7px;}
+
+/* ══════════════════════════════════════════
+   FEATURES
+══════════════════════════════════════════ */
+.features-section{padding:60px 0 80px;}
+.sec-tag{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--red2);margin-bottom:12px;}
+.sec-title{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,2.8vw,2.5rem);font-weight:800;letter-spacing:-.025em;margin-bottom:12px;line-height:1.15;}
+.sec-sub{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:480px;}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px;}
+.feat-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:28px 26px;
+  backdrop-filter:blur(12px);
+  transition:transform .3s,border-color .3s,box-shadow .3s;
+  position:relative;overflow:hidden;
+}
+.feat-card::after{content:'';position:absolute;inset:0;border-radius:20px;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(245,59,87,.08),transparent 60%);opacity:0;transition:opacity .3s;pointer-events:none;}
+.feat-card:hover{transform:translateY(-5px);border-color:rgba(245,59,87,.3);box-shadow:0 16px 44px rgba(0,0,0,.28);}
+.feat-card:hover::after{opacity:1;}
+.feat-icon{width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,rgba(245,59,87,.2),rgba(255,107,129,.1));border:1px solid rgba(245,59,87,.28);display:flex;align-items:center;justify-content:center;font-size:1.25rem;margin-bottom:18px;}
+.feat-card h3{font-size:.98rem;font-weight:700;margin-bottom:8px;}
+.feat-card p{font-size:.82rem;color:var(--muted);line-height:1.65;}
+
+/* ══════════════════════════════════════════
+   CTA BAND
+══════════════════════════════════════════ */
+.cta-section{padding:60px 0 100px;}
+.cta-band{
+  background:linear-gradient(135deg,rgba(245,59,87,.14),rgba(255,107,129,.07));
+  border:1px solid rgba(245,59,87,.25);
+  border-radius:28px;padding:60px 80px;
+  display:flex;align-items:center;justify-content:space-between;gap:40px;
+  position:relative;overflow:hidden;
+}
+.cta-band::before{content:'';position:absolute;top:-100px;right:-100px;width:350px;height:350px;border-radius:50%;background:radial-gradient(circle,rgba(245,59,87,.2),transparent 70%);filter:blur(35px);pointer-events:none;}
+.cta-band::after{content:'';position:absolute;bottom:-80px;left:-60px;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(255,107,129,.14),transparent 70%);filter:blur(28px);pointer-events:none;}
+.cta-text{}
+.cta-emoji{font-size:2.6rem;line-height:1;margin-bottom:14px;display:block;animation:bounce 2s ease infinite;}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.cta-band h2{font-family:'Syne',sans-serif;font-size:clamp(1.5rem,2.5vw,2rem);font-weight:800;margin-bottom:10px;}
+.cta-band p{color:var(--muted);font-size:.93rem;line-height:1.65;max-width:420px;}
+.cta-action{flex-shrink:0;}
+
+/* ══════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════ */
+footer{
+  border-top:1px solid var(--border);
+  background:rgba(13,13,15,.7);
+  backdrop-filter:blur(14px);
+}
+.footer-inner{
+  max-width:1280px;margin:0 auto;
+  padding:28px clamp(20px,5vw,80px);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;
+}
+footer p{font-size:.78rem;color:var(--muted);}
+.footer-heart{color:var(--red);}
+.footer-logo{display:flex;align-items:center;gap:8px;}
+.footer-logo img{width:22px;height:22px;border-radius:5px;object-fit:contain;background:rgba(245,59,87,.1);padding:1px;}
+.footer-logo span{font-family:'Syne',sans-serif;font-size:.88rem;font-weight:800;background:linear-gradient(135deg,#fff,var(--red2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+
+/* ══════════════════════════════════════════
+   ASSIGNMENT PAGE
+══════════════════════════════════════════ */
+#baitap-page{display:none;padding-top:66px;min-height:100vh;cursor:auto;}
+#baitap-page *{cursor:auto;}
+#baitap-page a,#baitap-page button{cursor:pointer;}
+/* Modal luôn dùng cursor bình thường dù ở trang nào */
+.modal-overlay,.modal,.modal *{cursor:auto !important;}
+.modal a,.modal button,.modal-overlay .mbtn,.float-bubble,.float-bubble *{cursor:pointer !important;}
+#baitap-page.active{display:block;}
+#intro-page.hidden{display:none;}
+
+.bt-page-wrap{
+  max-width:1280px;margin:0 auto;
+  padding:48px clamp(20px,5vw,80px) 80px;
+  position:relative;z-index:2;
+}
+.bt-header{margin-bottom:36px;}
+.bt-header h2{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;margin-bottom:8px;}
+.bt-header p{color:var(--muted);font-size:.9rem;}
+
+.assign-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px;}
+
+/* ── Card ── */
+.assign-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:24px 22px 20px;
+  backdrop-filter:blur(14px);cursor:none;
+  transition:transform .3s,border-color .3s,box-shadow .3s;
+  position:relative;overflow:hidden;
+}
+.assign-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(245,59,87,.08),transparent 65%);opacity:0;transition:opacity .3s;pointer-events:none;border-radius:20px;}
+.assign-card:hover{transform:translateY(-5px);border-color:rgba(245,59,87,.4);box-shadow:0 18px 50px rgba(0,0,0,.3);}
+.assign-card:hover::before{opacity:1;}
+.acard-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px;}
+.acard-icon{width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,rgba(245,59,87,.28),rgba(255,107,129,.14));border:1px solid rgba(245,59,87,.3);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.status-badge{display:inline-flex;align-items:center;gap:5px;font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:100px;}
+.status-badge.online{background:rgba(52,211,153,.14);border:1px solid rgba(52,211,153,.32);color:#34d399;}
+.status-badge.offline{background:rgba(156,163,175,.1);border:1px solid rgba(156,163,175,.22);color:#9ca3af;}
+.status-dot{width:5px;height:5px;border-radius:50%;}
+.status-badge.online .status-dot{background:#34d399;animation:blink 1.5s ease infinite;}
+.status-badge.offline .status-dot{background:#9ca3af;}
+.acard-title{font-size:1rem;font-weight:700;margin-bottom:6px;line-height:1.3;}
+.acard-meta{font-size:.77rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px;}
+.acard-btn{
+  width:100%;padding:10px;border-radius:11px;border:none;
+  background:linear-gradient(135deg,var(--red),var(--red2));
+  color:#fff;font-family:'Be Vietnam Pro',sans-serif;
+  font-size:.85rem;font-weight:700;cursor:none;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  box-shadow:0 4px 16px rgba(245,59,87,.35);
+  transition:transform .2s,box-shadow .2s;
+}
+.acard-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(245,59,87,.5);}
+.acard-btn.disabled{background:rgba(156,163,175,.16);box-shadow:none;color:var(--muted);cursor:not-allowed;}
+.acard-btn.disabled:hover{transform:none;box-shadow:none;}
+
+/* ══════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════ */
+.modal-overlay{
+  position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,.8);backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+  cursor:auto;
+}
+.modal-overlay *{cursor:auto;}
+.modal-overlay a,.modal-overlay button{cursor:pointer;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{
+  background:#1b1b1e;border:1px solid var(--border);
+  border-radius:22px;width:100%;max-width:1100px;
+  max-height:95vh;display:flex;flex-direction:column;
+  overflow:hidden;
+  box-shadow:0 32px 80px rgba(0,0,0,.7);
+  transform:scale(.95)translateY(14px);transition:transform .25s;
+}
+.modal-overlay.open .modal{transform:scale(1)translateY(0);}
+.modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:15px 20px;border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,.025);flex-shrink:0;
+}
+.modal-left{display:flex;align-items:center;gap:11px;}
+.modal-icon{font-size:1.35rem;}
+.modal-title{font-family:'Syne',sans-serif;font-size:.98rem;font-weight:800;}
+.modal-sub{font-size:.7rem;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:380px;}
+.modal-btns{display:flex;gap:7px;}
+.mbtn{
+  border:none;font-family:'Be Vietnam Pro',sans-serif;
+  font-size:.76rem;font-weight:700;
+  border-radius:9px;padding:8px 14px;cursor:none;
+  display:flex;align-items:center;gap:5px;
+  transition:transform .18s,background .18s;
+}
+.mbtn-hide{background:rgba(251,191,36,.12);color:#fbbf24;border:1px solid rgba(251,191,36,.28);}
+.mbtn-hide:hover{background:rgba(251,191,36,.24);transform:translateY(-1px);}
+.mbtn-close{background:rgba(245,59,87,.12);color:var(--red2);border:1px solid rgba(245,59,87,.28);}
+.mbtn-close:hover{background:rgba(245,59,87,.26);transform:translateY(-1px);}
+.mbtn-fs{background:rgba(99,179,237,.12);color:#63b3ed;border:1px solid rgba(99,179,237,.28);display:flex;align-items:center;gap:5px;}
+.mbtn-fs:hover{background:rgba(99,179,237,.24);transform:translateY(-1px);}
+.modal-overlay,.modal,.modal *{cursor:auto;}
+.mbtn,.link-open{cursor:pointer!important;}
+
+.modal-body{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;}
+.link-bar{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--border);
+  border-radius:10px;padding:8px 12px;flex-shrink:0;
+}
+.link-bar span{font-size:.76rem;color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.link-open{
+  background:linear-gradient(135deg,var(--red),var(--red2));
+  color:#fff;border:none;font-family:'Be Vietnam Pro',sans-serif;
+  font-size:.76rem;font-weight:700;
+  padding:7px 13px;border-radius:8px;cursor:none;
+  transition:transform .18s,box-shadow .18s;white-space:nowrap;
+}
+.link-open:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(245,59,87,.45);}
+.iframe-wrap{
+  border-radius:12px;overflow:hidden;
+  border:1px solid var(--border);background:#0f0f11;
+  height:900px;position:relative;flex-shrink:0;
+}
+.iframe-wrap iframe{width:100%;height:900px;border:none;display:block;}
+.iframe-ph{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;color:var(--muted);font-size:.84rem;text-align:center;padding:20px;
+}
+.iframe-ph-icon{font-size:3rem;}
+
+/* ══════════════════════════════════════════
+   FLOATING BUBBLE
+══════════════════════════════════════════ */
+.float-bubble{
+  position:fixed;z-index:600;
+  bottom:28px;right:28px;
+  background:rgba(24,24,26,.95);
+  backdrop-filter:blur(20px);
+  border:1px solid rgba(245,59,87,.38);
+  border-radius:100px;
+  padding:9px 16px 9px 10px;
+  display:flex;align-items:center;gap:10px;
+  box-shadow:0 10px 36px rgba(0,0,0,.5),0 0 0 1px rgba(245,59,87,.1);
+  cursor:none;
+  transition:transform .25s,box-shadow .25s,opacity .3s;
+  transform:translateY(80px)scale(.9);opacity:0;pointer-events:none;
+}
+.float-bubble.visible{transform:translateY(0)scale(1);opacity:1;pointer-events:all;}
+.float-bubble:hover{transform:translateY(-2px)scale(1.02);box-shadow:0 16px 44px rgba(0,0,0,.5),0 0 0 1px rgba(245,59,87,.28);}
+.bubble-ring{width:28px;height:28px;border-radius:50%;border:2px solid var(--red);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;}
+.bubble-ring::before{content:'';position:absolute;inset:-5px;border-radius:50%;border:1.5px solid rgba(245,59,87,.28);animation:bpulse 2s ease infinite;}
+@keyframes bpulse{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.38);opacity:0}}
+.bubble-dot{width:8px;height:8px;border-radius:50%;background:var(--red);animation:blink 1.5s ease infinite;}
+.bubble-info{display:flex;flex-direction:column;}
+.bubble-name{font-size:.76rem;font-weight:700;color:#fff;}
+.bubble-hint{font-size:.67rem;color:var(--red2);}
+.modal-overlay,.modal,.modal *{cursor:auto;}
+.modal-btns .mbtn,.link-open{cursor:pointer;}
+.bubble-x{cursor:pointer;}
+.bubble-x:hover{background:rgba(245,59,87,.18);color:var(--red2);}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
+@media(max-width:1024px){
+  .features-grid{grid-template-columns:repeat(2,1fr);}
+  .cta-band{flex-direction:column;text-align:center;padding:44px 36px;}
+  .cta-band p{margin:0 auto;}
+  .stats-inner{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:768px){
+  .hero-layout{grid-template-columns:1fr;gap:40px;text-align:center;padding:50px 0 60px;}
+  .hero-text-col .hero-actions{justify-content:center;}
+  .hero-text-col .hero-sub{margin-left:auto;margin-right:auto;}
+  .hero-visual-col{order:-1;}
+  .hero-card{max-width:340px;}
+  .features-grid{grid-template-columns:1fr;}
+}
+@media(max-width:480px){
+  .stats-inner{grid-template-columns:1fr 1fr;}
+  .hero-actions{flex-direction:column;align-items:stretch;}
+  .btn-primary,.btn-ghost{justify-content:center;}
+  .cta-band{padding:36px 24px;}
+}
 </style>
 </head>
 <body>
 
-<div id="intro">
-  <div class="ilogo">M</div>
-  <div class="ititle">Minh's Store</div>
-  <p class="isub">Chào mừng đến với cửa hàng điện tử uy tín — nơi quy tụ thiết bị công nghệ mới nhất, chính hãng và giá tốt nhất thị trường.</p>
-  <div class="itags">
-    <span class="itag">📱 Điện Thoại</span>
-    <span class="itag">💻 Máy Tính</span>
-    <span class="itag">📺 TV</span>
-    <span class="itag">🎧 Phụ Kiện</span>
-    <span class="itag">✅ Chính Hãng</span>
-    <span class="itag">🚚 Giao Nhanh</span>
-  </div>
-  <button class="ibtn" id="enterBtn">Vào Cửa Hàng →</button>
+<!-- ── CURSOR ── -->
+<div class="cursor">
+  <div class="cursor-dot" id="dot"></div>
+  <div class="cursor-ring" id="ring"></div>
 </div>
 
-<nav>
-  <a class="logo" href="#" id="logoHome">
-    <div class="logo-icon">M</div>
-    <span class="logo-text">Minh's <span>Store</span></span>
+<!-- ── BACKGROUND ── -->
+<div class="bg-canvas">
+  <div class="orb orb-1"></div><div class="orb orb-2"></div>
+  <div class="orb orb-3"></div><div class="orb orb-4"></div>
+</div>
+<div class="hover-glow" id="hoverGlow"></div>
+
+<!-- ════════════════════════════════════════
+     NAVBAR
+════════════════════════════════════════ -->
+<nav id="navbar">
+  <a href="#" class="nav-logo" onclick="showPage('intro');return false;">
+    <img src="logo.png" alt="HWAssist Logo" class="nav-logo-img">
+    <span class="nav-logo-text">HWAssist</span>
   </a>
   <ul class="nav-links">
-    <li><a href="#prods">Sản phẩm</a></li>
-    <li><a href="#prods">Điện thoại</a></li>
-    <li><a href="#prods">Máy tính</a></li>
-    <li><a href="#prods">TV</a></li>
+    <li><a href="#" onclick="showPage('intro');return false;" id="link-intro" class="active">Giới thiệu</a></li>
+    <li><a href="#" onclick="showPage('baitap');return false;" id="link-baitap">Bài tập</a></li>
+    <li><a href="#" class="cta" onclick="showPage('baitap');return false;">Làm ngay →</a></li>
   </ul>
-  <div class="nav-right">
-    <div class="tog" id="togBtn" title="Đổi giao diện">
-      <span class="tog-icon a">🌙</span>
-      <span class="tog-icon b">☀️</span>
-    </div>
-  </div>
 </nav>
 
-<main>
-  <section class="hero">
-    <div class="htag">✦ Công nghệ mới nhất 2025</div>
-    <h1>Thiết Bị Đỉnh Cao<br><span class="g">Giá Tốt Nhất</span></h1>
-    <p>Khám phá hàng ngàn sản phẩm điện tử chính hãng — từ smartphone cao cấp đến TV 8K, laptop AI — tất cả tại Minh's Store.</p>
-    <div class="hbtns">
-      <a href="#prods" class="bp">Mua Sắm Ngay</a>
-      <a href="#prods" class="bg">Xem Khuyến Mãi</a>
+<!-- ════════════════════════════════════════
+     INTRO PAGE
+════════════════════════════════════════ -->
+<div id="intro-page">
+
+  <!-- HERO -->
+  <section id="intro">
+    <div class="page-wrap">
+      <div class="hero-layout">
+
+        <!-- LEFT: TEXT -->
+        <div class="hero-text-col">
+          <div class="hero-badge">
+            <span class="badge-dot"></span>
+            Lớp 11A3 · Học kỳ 2025–2026
+          </div>
+          <h1 class="hero-title">
+            Nền tảng học tập<br>
+            <span class="line2">HWAssist 11A3</span>
+          </h1>
+          <p class="hero-sub">
+            Hệ thống bài tập trực tuyến dành riêng cho lớp 11A3. Làm bài, nộp bài và theo dõi kết quả mọi lúc, mọi nơi — nhanh chóng và tiện lợi.
+          </p>
+          <div class="hero-actions">
+            <a href="#" class="btn-primary" onclick="showPage('baitap');return false;">
+              📚 Làm bài tập ngay <span class="arrow">→</span>
+            </a>
+            <a href="#features" class="btn-ghost">🔍 Tính năng</a>
+          </div>
+        </div>
+
+        <!-- RIGHT: CARD -->
+        <div class="hero-visual-col">
+          <div class="hero-card">
+            <!-- floating tags -->
+            <div class="hcard-tag t1">● Đang hoạt động</div>
+            <div class="hcard-tag t2">⭐ 8.5 GPA</div>
+
+            <div class="hcard-logo-wrap">
+              <img src="logo.png" alt="Logo" class="hcard-logo">
+              <div class="hcard-label">
+                <div class="hcard-name">HWAssist</div>
+                <div class="hcard-class">Lớp 11A3 · 2025–2026</div>
+              </div>
+            </div>
+
+            <div class="hcard-stats">
+              <div class="hstat"><div class="hstat-n">35</div><div class="hstat-l">Học sinh</div></div>
+              <div class="hstat"><div class="hstat-n">100+</div><div class="hstat-l">Bài tập</div></div>
+              <div class="hstat"><div class="hstat-n">98%</div><div class="hstat-l">Nộp đúng hạn</div></div>
+              <div class="hstat"><div class="hstat-n">8.5⭐</div><div class="hstat-l">Điểm TB</div></div>
+            </div>
+
+            <button class="hcard-btn" onclick="showPage('baitap')">
+              📚 Vào làm bài ngay →
+            </button>
+          </div>
+        </div>
+
+      </div>
     </div>
   </section>
 
-  <div class="mqs">
-    <div class="mqt">
-      <span class="mqi"><span>📱</span> Samsung Galaxy S25 Ultra</span>
-      <span class="mqi"><span>💻</span> MacBook Pro M4</span>
-      <span class="mqi"><span>📺</span> Samsung Neo QLED 8K</span>
-      <span class="mqi"><span>📱</span> OPPO Find X8 Pro</span>
-      <span class="mqi"><span>📱</span> Vivo X200 Pro</span>
-      <span class="mqi"><span>💻</span> Dell XPS 16</span>
-      <span class="mqi"><span>🎧</span> Sony WH-1000XM6</span>
-      <span class="mqi"><span>📱</span> Samsung Galaxy S25 Ultra</span>
-      <span class="mqi"><span>💻</span> MacBook Pro M4</span>
-      <span class="mqi"><span>📺</span> Samsung Neo QLED 8K</span>
-      <span class="mqi"><span>📱</span> OPPO Find X8 Pro</span>
-      <span class="mqi"><span>📱</span> Vivo X200 Pro</span>
-      <span class="mqi"><span>💻</span> Dell XPS 16</span>
-      <span class="mqi"><span>🎧</span> Sony WH-1000XM6</span>
-    </div>
-  </div>
-
-  <section class="sec" id="prods">
-    <div class="sec-hd">
-      <div>
-        <div class="sec-lbl">– Bộ sưu tập</div>
-        <div class="sec-ttl">Sản Phẩm Nổi Bật</div>
-      </div>
-      <div class="filters">
-        <button class="fb on" onclick="doFilter('all',this)">Tất cả</button>
-        <button class="fb" onclick="doFilter('phone',this)">📱 Điện thoại</button>
-        <button class="fb" onclick="doFilter('laptop',this)">💻 Máy tính</button>
-        <button class="fb" onclick="doFilter('tv',this)">📺 TV</button>
-      </div>
-    </div>
-
-    <div class="pgrid" id="pgrid">
-
-      <div class="pc" data-cat="phone">
-        <span class="bdg bn">Mới 2025</span>
-        <div class="pimgw"><div class="pem">📱</div></div>
-        <div class="pinfo">
-          <div class="pbrand">Samsung</div>
-          <div class="pname">Galaxy S25 Ultra</div>
-          <div class="pspec">Snapdragon 8 Elite · 12GB RAM · 200MP · 6.9"</div>
-          <div class="pbot">
-            <div><span class="pprice">32.990.000 ₫</span><span class="ppold">36.990.000 ₫</span></div>
-            <button class="badd" onclick="addItem(event)">+ Giỏ hàng</button>
-          </div>
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="page-wrap">
+      <div class="features-section">
+        <div>
+          <span class="sec-tag">Tính năng nổi bật</span>
+          <h2 class="sec-title">Mọi thứ bạn cần<br>trong một nơi</h2>
+          <p class="sec-sub">Thiết kế thân thiện, dễ dùng — giúp học sinh tập trung vào việc học.</p>
+        </div>
+        <div class="features-grid">
+          <div class="feat-card"><div class="feat-icon">📝</div><h3>Giao bài trực tuyến</h3><p>Giáo viên giao bài nhanh, học sinh nhận và làm bài mọi lúc mọi nơi.</p></div>
+          <div class="feat-card"><div class="feat-icon">⏱️</div><h3>Đếm ngược thời gian</h3><p>Đồng hồ trực quan cho mỗi bài tập, giúp quản lý thời gian hiệu quả.</p></div>
+          <div class="feat-card"><div class="feat-icon">📊</div><h3>Thống kê điểm số</h3><p>Biểu đồ điểm và lịch sử nộp bài chi tiết để theo dõi tiến độ.</p></div>
+          <div class="feat-card"><div class="feat-icon">🔔</div><h3>Nhắc nhở thông minh</h3><p>Thông báo khi có bài mới, sắp hết hạn hoặc giáo viên đã chấm xong.</p></div>
+          <div class="feat-card"><div class="feat-icon">📱</div><h3>Mọi thiết bị</h3><p>Điện thoại, máy tính bảng hay laptop đều được tối ưu hoàn hảo.</p></div>
+          <div class="feat-card"><div class="feat-icon">🏆</div><h3>Bảng thành tích</h3><p>Xếp hạng lớp tạo động lực thi đua lành mạnh cho mọi học sinh.</p></div>
         </div>
       </div>
-
-      <div class="pc" data-cat="phone">
-        <span class="bdg bh">Bán chạy</span>
-        <div class="pimgw"><div class="pem">📲</div></div>
-        <div class="pinfo">
-          <div class="pbrand">Samsung</div>
-          <div class="pname">Galaxy S25+</div>
-          <div class="pspec">Snapdragon 8 Elite · 12GB RAM · 50MP · 6.7"</div>
-          <div class="pbot">
-            <div><span class="pprice">24.990.000 ₫</span><span class="ppold">27.990.000 ₫</span></div>
-            <button class="badd" onclick="addItem(event)">+ Giỏ hàng</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="pc" data-cat="phone">
-        <span class="bdg bs">Giảm 15%</span>
-        <div class="pimgw"><div class="pem">📱</div></div>
-        <div class="pinfo">
-          <div class="pbrand">Samsung</div>
-          <div class="pname">Galaxy Z Fold 6</div>
-          <div class="pspec">Snapdragon 8 Gen 3 · 12GB RAM · Màn Gập 7.6"</div>
-          <div class="pbot">
-            <div><span class="pprice">42.990.000 ₫</span><span class="ppold">50.990.000 ₫</span></div>
-            <button class="badd" onclick="addItem(event)">+ Giỏ hàng</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="pc" data-cat="phone">
-        <span class="bdg bn">Mới 2025</span>
-        <div class="pimgw"><div class="pem">🔷</div></div>
-        <div class="pinfo">
-          <div class="pbrand">OPPO</div>
-          <div class="pname">Find X8 Pro</div>
-          <div class="pspec">Dimensity 9400 · 16GB RAM · Camera đỉnh cao</div>
-          <div class="pbot">
-            <div><span class="pprice">29.990.000 ₫</span><span class="ppold">34.990.000 ₫</span></div>
-            <button class="badd" onclick="addItem(event)">+ Giỏ hàng</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="pc" data-cat="phone">
-        <div class="pimgw"><div class="pem">📡</div></div>
-        <div class="pinfo">
-          <div class="pbrand">OPPO</div>
-          <div class="pname">Reno 13 Pro</div>
-          <div class="pspec">Dimensity 8350 · 12GB RAM · AI Camera 50MP</div>
-          <div class="pbot">
-            <div><span class="pprice">14.990.000 ₫</span><span class="ppold">16.990.000 ₫</span></div>
-            <button class="badd" onclick="addItem(event)">+ Giỏ hàng</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="pc" data-cat="phone">
-        <span class="bdg bn">Mới nhất</span>
-        <div class="pimgw"><div class="pem">🔵</div></div>
-        <div class="pinfo">
-          <div class="pbrand">Vivo</div>
-          <div class="pname">X200 Pro</div>
-          <div class="pspec">Dimensity 9400 · 16GB RAM · ZEISS 200MP</div>
-          <div class="pbot">
-            <div><span class="pprice">28.490.000 ₫</span><span class="ppold">31.990.000 ₫</span></div>
-            <button class="badd" onclick="addItem(event)">+ Giỏ hàng</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="pc" data-cat="phone">
-        <span class="bdg bh">Top pick</span>
-        <div class="pimgw"><div class="pem">💙</div></div>
-        <div class="pinfo">
-          <div class="pbrand">Vivo</div>
-          <div class="pname">X200 Ultra</div>
-          <div class="pspec">Snapdragon 8 Elite · 16GB RAM · ZEISS 300MP</div>
-          <div class="pbot">
-            <div><span class="pprice">36.990.000 ₫</span><span class="ppold">41.990.000 ₫</span></div>
-            <button class="badd" onclick="addItem(event)">+ Giỏ hàng</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="pc" data-cat="laptop">
-        <span class="bdg bn">M4 Pro</span>
-        <div class="pimgw"><div class="pem">💻</div></div>
-        <div class="pinfo">
-          <div class="pbrand">Apple</div>
-          <div class="pname">MacBook Pro 14" M4 Pro</div>
-          <div class="pspec">M4 Pro · 24GB · 512GB SSD · Liquid Retina XDR</div>
-          <div class="pbot">
-            <div><span class="pprice">58.990.000 ₫</span><span class="ppold">64.990.000 ₫</span></div>
-            <button class="badd" onclick="addItem(event)">+ Giỏ hàng</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="pc" data-cat="laptop">
-        <span class="bdg bh">AI Laptop</span>
-        <div class="pimgw"><div class="pem">🖥️</div></div>
-        <div class="pinfo">
-          <div class="pbrand">Dell</div>
-          <div class="pname">XPS 16 9640</div>
-          <div class="pspec">Intel Core Ultra 9 · 32GB · RTX 4070 · OLED 3.2K</div>
-          <div class="pbot">
-            <div><span class="pprice">54.990.000 ₫</span><span class="ppold">62.990.000 ₫</span></div>
-            <button class="badd" onclick="addItem(event)">+ Giỏ hàng</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="pc" data-cat="laptop">
-        <span class="bdg bs">Giảm 20%</span>
-        <div class="pimgw"><div class="pem">⚡</div></div>
-        <div class="pinfo">
-          <div class="pbrand">ASUS</div>
-          <div class="pname">ROG Zephyrus G16</div>
-          <div class="pspec">Ryzen AI 9 · 32GB · RTX 4080 · OLED 240Hz</div>
-          <div class="pbot">
-            <div><span class="pprice">55.990.000 ₫</span><span class="ppold">69.990.000 ₫</span></div>
-            <button class="badd" onclick="addItem(event)">+ Giỏ hàng</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="pc" data-cat="laptop">
-        <div class="pimgw"><div class="pem">🔲</div></div>
-        <div class="pinfo">
-          <div class="pbrand">Samsung</div>
-          <div class="pname">Galaxy Book4 Ultra</div>
-          <div class="pspec">Intel Core Ultra 9 · 32GB · RTX 4070 · AMOLED 3K</div>
-          <div class="pbot">
-            <div><span class="pprice">52.990.000 ₫</span><span class="ppold">57.990.000 ₫</span></div>
-            <button class="badd" onclick="addItem(event)">+ Giỏ hàng</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="pc" data-cat="tv">
-        <span class="bdg bn">8K 2025</span>
-        <div class="pimgw"><div class="pem">📺</div></div>
-        <div class="pinfo">
-          <div class="pbrand">Samsung</div>
-          <div class="pname">Neo QLED 8K QN900D 85"</div>
-          <div class="pspec">8K AI Upscaling · Quantum Matrix Pro · Âm thanh vòm</div>
-          <div class="pbot">
-            <div><span class="pprice">189.990.000 ₫</span><span class="ppold">220.000.000 ₫</span></div>
-            <button class="badd" onclick="addItem(event)">+ Giỏ hàng</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="pc" data-cat="tv">
-        <span class="bdg bh">4K OLED</span>
-        <div class="pimgw"><div class="pem">🖥️</div></div>
-        <div class="pinfo">
-          <div class="pbrand">LG</div>
-          <div class="pname">OLED evo G4 65"</div>
-          <div class="pspec">OLED · α11 AI Processor · 4K 144Hz · Vision IQ</div>
-          <div class="pbot">
-            <div><span class="pprice">55.990.000 ₫</span><span class="ppold">65.990.000 ₫</span></div>
-            <button class="badd" onclick="addItem(event)">+ Giỏ hàng</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="pc" data-cat="tv">
-        <span class="bdg bs">Giảm 18%</span>
-        <div class="pimgw"><div class="pem">📡</div></div>
-        <div class="pinfo">
-          <div class="pbrand">Sony</div>
-          <div class="pname">Bravia 9 XR 75"</div>
-          <div class="pspec">Mini LED · XR Cognitive · 4K 120Hz · Google TV</div>
-          <div class="pbot">
-            <div><span class="pprice">72.990.000 ₫</span><span class="ppold">89.990.000 ₫</span></div>
-            <button class="badd" onclick="addItem(event)">+ Giỏ hàng</button>
-          </div>
-        </div>
-      </div>
-
     </div>
   </section>
-</main>
 
-<footer>
-  <div class="fbrand">
-    <div class="logo">
-      <div class="logo-icon" style="width:36px;height:36px;font-size:16px">M</div>
-      <span class="logo-text">Minh's <span>Store</span></span>
+  <!-- CTA BAND -->
+  <div class="page-wrap">
+    <div class="cta-section">
+      <div class="cta-band">
+        <div class="cta-text">
+          <span class="cta-emoji">🚀</span>
+          <h2>Sẵn sàng làm bài chưa?</h2>
+          <p>Kiểm tra bài tập mới từ giáo viên và hoàn thành trước hạn. Chúc bạn học tốt, 11A3! 💪</p>
+        </div>
+        <div class="cta-action">
+          <a href="#" class="btn-primary" onclick="showPage('baitap');return false;" style="display:inline-flex;font-size:1rem;padding:15px 34px;">
+            📚 Vào trang bài tập <span class="arrow">→</span>
+          </a>
+        </div>
+      </div>
     </div>
-    <p>Cửa hàng điện tử uy tín — chuyên cung cấp thiết bị công nghệ chính hãng, giá tốt, bảo hành toàn quốc.</p>
   </div>
-  <div class="fcol">
-    <h4>Sản Phẩm</h4>
-    <ul>
-      <li><a href="#">Điện Thoại</a></li>
-      <li><a href="#">Máy Tính</a></li>
-      <li><a href="#">TV &amp; Màn Hình</a></li>
-      <li><a href="#">Phụ Kiện</a></li>
-    </ul>
-  </div>
-  <div class="fcol">
-    <h4>Hỗ Trợ</h4>
-    <ul>
-      <li><a href="#">Về Chúng Tôi</a></li>
-      <li><a href="#">Chính Sách</a></li>
-      <li><a href="#">Đổi Trả</a></li>
-      <li><a href="#">Liên Hệ</a></li>
-    </ul>
-  </div>
-</footer>
-<div class="fbot">© 2025 Minh's Store · Chuyên điện tử · Uy tín · Chính hãng</div>
 
-<div id="toast">✓ Đã thêm vào giỏ hàng!</div>
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <img src="logo.png" alt="Logo">
+        <span>HWAssist</span>
+      </div>
+      <p>© 2025 HWAssist · Học tập chăm chỉ mỗi ngày <span class="footer-heart">♥</span></p>
+      <p>Thiết kế dành riêng cho lớp 11A3</p>
+    </div>
+  </footer>
+
+</div><!-- /intro-page -->
+
+<!-- ════════════════════════════════════════
+     BÀI TẬP PAGE
+════════════════════════════════════════ -->
+<div id="baitap-page">
+  <div class="bt-page-wrap">
+    <div class="bt-header">
+      <h2>📚 Danh sách bài tập</h2>
+      <p>Chọn bài tập bên dưới để bắt đầu làm ngay.</p>
+    </div>
+
+    <!-- ╔═══════════════════════════════════════════════════╗
+         ║  CÁCH THÊM BÀI TẬP MỚI:                          ║
+         ║  Copy một khối <div class="assign-card" ...>      ║
+         ║  Sửa các data-* cho phù hợp                       ║
+         ║  data-status: "online" (mở) | "offline" (đóng)    ║
+         ╚═══════════════════════════════════════════════════╝ -->
+    <div class="assign-grid" id="assignGrid">
+
+      <!-- BÀI 1: VÍ DỤ -->
+      <div class="assign-card"
+        data-title="Ví dụ – Đề thi thử Azota"
+        data-url="https://azota.vn/de-thi/pq5vzy"
+        data-iframe-title="ĐỀ CƯƠNG ÔN TẬP VẬT LÝ 11 GHK2 - Copy.docx"
+        data-subject="📄"
+        data-status="online"
+        data-deadline="20/03/2025"
+        data-teacher="Giáo viên bộ môn">
+      </div>
+
+      <!-- THÊM BÀI MỚI TẠI ĐÂY ↓
+      <div class="assign-card"
+        data-title="Tên bài tập"
+        data-url="https://azota.vn/de-thi/XXXXX"
+        data-iframe-title="Tên hiển thị trong iframe"
+        data-subject="📐"
+        data-status="online"
+        data-deadline="DD/MM/YYYY"
+        data-teacher="Tên giáo viên">
+      </div>
+      -->
+
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     MODAL
+════════════════════════════════════════ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-left">
+        <span class="modal-icon" id="modalIcon">📄</span>
+        <div>
+          <div class="modal-title" id="modalTitle">Bài tập</div>
+          <div class="modal-sub" id="modalSub"></div>
+        </div>
+      </div>
+      <div class="modal-btns">
+        <button class="mbtn mbtn-fs" id="btnFullscreen" onclick="toggleFullscreen()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+          Toàn màn hình
+        </button>
+        <button class="mbtn mbtn-hide" onclick="hideModal()">👁️ Ẩn</button>
+        <button class="mbtn mbtn-close" onclick="closeModal()">✕ Đóng</button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="link-bar">
+        <span id="modalUrl"></span>
+        <button class="link-open" onclick="openExternal()">↗ Mở tab mới</button>
+      </div>
+      <div class="iframe-wrap" id="iframeWrap">
+        <div class="iframe-ph" id="iframePh">
+          <div class="iframe-ph-icon">🔗</div>
+          <div>Đang tải bài tập…</div>
+        </div>
+        <iframe id="modalIframe" src="" title="Bài tập"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          onload="onLoad()"
+          onerror="onErr()">
+        </iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     FLOATING BUBBLE
+════════════════════════════════════════ -->
+<div class="float-bubble" id="floatBubble" onclick="resumeModal()">
+  <div class="bubble-ring"><div class="bubble-dot"></div></div>
+  <div class="bubble-info">
+    <span class="bubble-name" id="bubbleName">Đang làm bài</span>
+    <span class="bubble-hint">Nhấn để quay lại →</span>
+  </div>
+  <button class="bubble-x" onclick="event.stopPropagation();closeModal()">✕</button>
+</div>
 
 <script>
-(function(){
-  var intro = document.getElementById('intro');
-  var enterBtn = document.getElementById('enterBtn');
-  var togBtn = document.getElementById('togBtn');
-  var logoHome = document.getElementById('logoHome');
-  var nav = document.querySelector('nav');
-  var toastEl = document.getElementById('toast');
-  var toastTmr;
+// ─── PAGE SWITCH ───────────────────────────
+function showPage(p) {
+  document.getElementById('intro-page').classList.toggle('hidden', p !== 'intro');
+  document.getElementById('baitap-page').classList.toggle('active', p === 'baitap');
+  document.getElementById('link-intro').classList.toggle('active', p === 'intro');
+  document.getElementById('link-baitap').classList.toggle('active', p === 'baitap');
+  window.scrollTo({top:0, behavior:'smooth'});
+  if (p === 'baitap') setTimeout(revealCards, 80);
+}
 
-  enterBtn.addEventListener('click', function(){
-    intro.classList.add('gone');
-  });
-
-  togBtn.addEventListener('click', function(){
-    var html = document.documentElement;
-    html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
-  });
-
-  logoHome.addEventListener('click', function(e){
-    e.preventDefault();
-    window.scrollTo({top:0, behavior:'smooth'});
-  });
-
-  window.addItem = function(e){
-    e.stopPropagation();
-    toastEl.classList.add('show');
-    clearTimeout(toastTmr);
-    toastTmr = setTimeout(function(){ toastEl.classList.remove('show'); }, 2200);
-  };
-
-  window.doFilter = function(cat, btn){
-    document.querySelectorAll('.fb').forEach(function(b){ b.classList.remove('on'); });
-    btn.classList.add('on');
-    document.querySelectorAll('.pc').forEach(function(c, i){
-      var show = cat === 'all' || c.dataset.cat === cat;
-      c.style.display = show ? '' : 'none';
-      if(show){
-        c.style.animationDelay = (i * 0.05) + 's';
-        c.style.animation = 'none';
-        setTimeout(function(){ c.style.animation = ''; }, 10);
-      }
+// ─── BUILD ASSIGN CARDS ───────────────────
+function buildCards() {
+  document.querySelectorAll('.assign-card').forEach(card => {
+    const t   = card.dataset.title       || 'Bài tập';
+    const u   = card.dataset.url         || '';
+    const it  = card.dataset.iframeTitle || t;
+    const s   = card.dataset.subject     || '📄';
+    const st  = card.dataset.status      || 'online';
+    const dl  = card.dataset.deadline    || '—';
+    const tc  = card.dataset.teacher     || '—';
+    const on  = st === 'online';
+    card.innerHTML = `
+      <div class="acard-top">
+        <div class="acard-icon">${s}</div>
+        <span class="status-badge ${st}">
+          <span class="status-dot"></span>${on ? 'Đang mở' : 'Đã đóng'}
+        </span>
+      </div>
+      <div class="acard-title">${t}</div>
+      <div class="acard-meta">
+        <span>📅 ${dl}</span>
+        <span>👤 ${tc}</span>
+      </div>
+      <button class="acard-btn${on?'':' disabled'}"
+        ${on ? `onclick="openModal(this)"
+          data-title="${t}"
+          data-url="${u}"
+          data-iframe-title="${it}"
+          data-subject="${s}"` : 'disabled'}>
+        ${on ? '▶ Làm bài ngay' : '🔒 Đã đóng'}
+      </button>`;
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', ((e.clientX-r.left)/r.width*100)+'%');
+      card.style.setProperty('--my', ((e.clientY-r.top)/r.height*100)+'%');
     });
-  };
-
-  window.addEventListener('scroll', function(){
-    nav.style.boxShadow = window.scrollY > 40 ? '0 4px 30px rgba(0,0,0,.25)' : 'none';
   });
+}
+buildCards();
+
+// ─── MODAL ────────────────────────────────
+let curUrl = '';
+let curCardUrl = '';   // url của bài đang bị ẩn (bubble đang hiện)
+
+function openModal(btn) {
+  const targetUrl = btn.dataset.url;
+
+  // Nếu bài này đang bị ẩn (bubble hiện) → resume lại, không load lại
+  if (document.getElementById('floatBubble').classList.contains('visible') && curCardUrl === targetUrl) {
+    resumeModal();
+    return;
+  }
+
+  // Nếu có bài KHÁC đang ẩn → hỏi xác nhận trước khi bỏ
+  if (document.getElementById('floatBubble').classList.contains('visible') && curCardUrl !== targetUrl) {
+    if (!confirm('Bạn đang làm bài khác chưa thoát.\nBấm OK để thoát và mở bài mới, Cancel để quay lại bài cũ.')) {
+      resumeModal();
+      return;
+    }
+  }
+
+  curUrl = targetUrl;
+  curCardUrl = targetUrl;
+
+  const title = btn.dataset.title;
+  const iframeTitle = btn.dataset.iframeTitle || title;
+
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalIcon').textContent  = btn.dataset.subject;
+  document.getElementById('modalSub').textContent   = curUrl;
+  document.getElementById('modalUrl').textContent   = curUrl;
+  document.getElementById('bubbleName').textContent = title;
+
+  const ph = document.getElementById('iframePh');
+  ph.style.display = 'flex';
+  ph.innerHTML = '<div class="iframe-ph-icon">🔗</div><div>Đang tải bài tập…</div>';
+
+  const iframe = document.getElementById('modalIframe');
+  iframe.style.opacity = '0';
+  iframe.title = iframeTitle;
+  iframe.src = curUrl;
+
+  document.getElementById('modalOverlay').classList.add('open');
+  document.getElementById('floatBubble').classList.remove('visible');
+  document.body.style.overflow = 'hidden';
+}
+function onLoad() {
+  document.getElementById('iframePh').style.display = 'none';
+  const f = document.getElementById('modalIframe');
+  f.style.transition = 'opacity .3s'; f.style.opacity = '1';
+}
+function onErr() {
+  document.getElementById('iframePh').innerHTML =
+    `<div class="iframe-ph-icon">⚠️</div>
+     <div style="margin-bottom:10px">Trang không cho phép nhúng trực tiếp.</div>
+     <button class="link-open" onclick="openExternal()">↗ Mở trong tab mới</button>`;
+}
+function hideModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.getElementById('floatBubble').classList.add('visible');
+  document.body.style.overflow = '';
+}
+function resumeModal() {
+  document.getElementById('modalOverlay').classList.add('open');
+  document.getElementById('floatBubble').classList.remove('visible');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  if (document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.getElementById('floatBubble').classList.remove('visible');
+  document.body.style.overflow = '';
+  curCardUrl = '';  // reset guard
+  setTimeout(() => {
+    document.getElementById('modalIframe').src = '';
+    const ph = document.getElementById('iframePh');
+    ph.style.display = 'flex';
+    ph.innerHTML = '<div class="iframe-ph-icon">🔗</div><div>Đang tải bài tập…</div>';
+  }, 280);
+}
+function openExternal() { if (curUrl) window.open(curUrl,'_blank'); }
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target===document.getElementById('modalOverlay')) hideModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape' && document.getElementById('modalOverlay').classList.contains('open')) hideModal();
+});
+
+// ─── NAVBAR SCROLL ────────────────────────
+window.addEventListener('scroll',()=>{
+  document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>30);
+});
+
+// ─── CURSOR ───────────────────────────────
+const dot=document.getElementById('dot'), ring=document.getElementById('ring');
+let mx=0,my=0,rx=0,ry=0;
+
+function isOnBaitap() {
+  // Trang bài tập đang active VÀ modal đang đóng
+  return document.getElementById('baitap-page').classList.contains('active')
+      && !document.getElementById('modalOverlay').classList.contains('open');
+}
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  if (isOnBaitap()) {
+    dot.style.opacity = '0'; ring.style.opacity = '0';
+    return;
+  }
+  dot.style.opacity = '1'; ring.style.opacity = '1';
+  dot.style.left = mx+'px'; dot.style.top = my+'px';
+});
+
+(function loop() {
+  if (!isOnBaitap()) {
+    rx += (mx-rx)*.12; ry += (my-ry)*.12;
+    ring.style.left = rx+'px'; ring.style.top = ry+'px';
+  }
+  requestAnimationFrame(loop);
 })();
+
+document.addEventListener('mouseover', e => {
+  if (isOnBaitap()) return;
+  const b = e.target.closest('a,button');
+  ring.style.width  = b?'48px':'34px';
+  ring.style.height = b?'48px':'34px';
+  ring.style.borderColor = b?'rgba(245,59,87,.9)':'rgba(245,59,87,.5)';
+});
+
+// ─── HOVER GLOW ───────────────────────────
+const glow=document.getElementById('hoverGlow');
+document.addEventListener('mousemove', e => {
+  if (isOnBaitap()) { glow.style.opacity='0'; return; }
+  glow.style.left=e.clientX+'px'; glow.style.top=e.clientY+'px'; glow.style.opacity='1';
+});
+document.addEventListener('mouseleave',()=>{ glow.style.opacity='0'; });
+
+// ─── SCROLL REVEAL ────────────────────────
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, {threshold:.08});
+
+// Only run reveal once per card — don't reset if already shown
+const revealedCards = new Set();
+function revealCards() {
+  document.querySelectorAll('.assign-card').forEach(el => {
+    if (revealedCards.has(el)) return; // already revealed, skip
+    revealedCards.add(el);
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(22px)';
+    el.style.transition = 'opacity .4s ease, transform .4s ease';
+    io.observe(el);
+  });
+}
+
+document.querySelectorAll('.feat-card,.stat-card,.cta-band').forEach(el => {
+  el.style.opacity = '0'; el.style.transform = 'translateY(22px)';
+  el.style.transition = 'opacity .45s ease, transform .45s ease';
+  io.observe(el);
+});
+document.querySelectorAll('.feat-card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    card.style.setProperty('--mx', ((e.clientX-r.left)/r.width*100)+'%');
+    card.style.setProperty('--my', ((e.clientY-r.top)/r.height*100)+'%');
+  });
+});
+
+// ─── FULLSCREEN ───────────────────────────
+function toggleFullscreen() {
+  const modal = document.querySelector('.modal');
+  const btn   = document.getElementById('btnFullscreen');
+  if (!document.fullscreenElement) {
+    modal.requestFullscreen().then(() => {
+      btn.textContent = '⛶';
+      btn.title = 'Thoát toàn màn hình';
+      modal.style.borderRadius = '0';
+      modal.style.maxHeight = '100vh';
+      modal.style.maxWidth = '100vw';
+    }).catch(() => {});
+  } else {
+    document.exitFullscreen().then(() => {
+      btn.textContent = '⛶';
+      btn.title = 'Toàn màn hình';
+      modal.style.borderRadius = '';
+      modal.style.maxHeight = '';
+      modal.style.maxWidth = '';
+    }).catch(() => {});
+  }
+}
+document.addEventListener('fullscreenchange', () => {
+  const btn = document.getElementById('btnFullscreen');
+  if (!btn) return;
+  if (document.fullscreenElement) {
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg> Thu nhỏ`;
+  } else {
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg> Toàn màn hình`;
+  }
+});
 </script>
 </body>
 </html>
